@@ -14,21 +14,15 @@ Player.prototype.showCorrectPanels = function () {
 }
 
 Player.prototype.draw = function () {
-    this.resources.draw();
+    var resourceInfo = this.gameData.resources;
+    this.resources.draw(resourceInfo);
     $.each(this.panels, function () {
-        this.draw();
+        this.draw(resourceInfo);
     });
 }
 
 Player.prototype.calcCost = function (resourceCost) {
-    var newResources = this.resources.subtractResources(resourceCost);
-    if (newResources.allPositive()) {
-        this.resources = newResources;
-        return true;
-    }
-    else {
-        return false;
-    }
+    return this.resources.subtractResources(resourceCost);
 }
 
 Player.prototype.calculateResourceGain = function (elapsed) {

@@ -11,7 +11,7 @@ var data = {
                         this.player.resources.addResources({ entropy: new Decimal(10) });
                         this.player.panels.intro.close();
                         $(".resources-panel.evoSeeds").hide();
-                        this.player.panels.d0.open();
+                        this.player.panels.d1.open();
                     }
                 }
             },
@@ -19,8 +19,8 @@ var data = {
                 $(".resources-panel.evoSeeds").show();
             }
         },
-        d0: {
-            class: "d0-panel",
+        d1: {
+            class: "d1-panel",
             buttons: {
                 symbioteButton: {
                     cost: {
@@ -37,9 +37,16 @@ var data = {
         }
     },
     resources: {
-        evoSeeds: {},
-        entropy: {},
+        evoSeeds: {
+            label: "Evolution Seed",
+            pluralLabel: "Evolution Seeds"
+        },
+        entropy: {
+            label: "Entropy"
+        },
         symbiotes: {
+            label: "Symbiote",
+            pluralLabel: "Symbiotes",
             resourceGain: {
                 entropy: new Decimal(1)
             }

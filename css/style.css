@@ -11,6 +11,11 @@ body {
     align-items: center;
     border-radius: 2px;
     background-color: lightgreen;
+    font-size: 16px;
+}
+.upgrade-button[disabled]{
+    color: black;
+    background-color: indianred;
 }
 
 .upgrade-button.locked{

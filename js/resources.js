@@ -33,3 +33,13 @@ Resources.prototype.draw = function () {
         $(`.${name}-amt`).html(this.toString());
     });
 }
+
+Resources.prototype.toString = function (resourceInfo) {
+    var res = [];
+    for (var name in this.vals) {
+        if (this.vals[name].greaterThan(0)) {
+            res.push(this.vals[name].toString() + " " + (this.vals[name].greaterThan(1) && resourceInfo[name].pluralLabel ? resourceInfo[name].pluralLabel : resourceInfo[name].label));
+        }
+    }
+    return res.join(", ");
+}
