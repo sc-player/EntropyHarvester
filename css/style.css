@@ -1,0 +1,26 @@
+body {
+    color: white;
+    background-color: black;
+    text-align: center;
+    margin: 2%;
+}
+
+.upgrade-button {
+    width: 200px;
+    height: 200px;
+    align-items: center;
+    border-radius: 2px;
+    background-color: lightgreen;
+}
+
+.upgrade-button.locked{
+    background-color: grey;
+}
+
+.game-panel{
+    display: none;
+}
+
+.resources-panel {
+    display: none;
+}
