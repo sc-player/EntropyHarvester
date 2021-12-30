@@ -24,6 +24,10 @@ Player.prototype.addResources = function (resources) {
     this.resources = this.resources.plus(resources);
 }
 
+Player.prototype.setResources = function (resources) {
+    this.resources = this.resources.set(resources);
+}
+
 Player.prototype.calcCost = function (resourceCost) {
     return this.resources.minus(resourceCost);
 }
@@ -37,4 +41,8 @@ Player.prototype.calculateResourceGain = function (elapsed) {
         }
     }
     this.addResources(gain);
+}
+
+Player.prototype.cellTreeReset = function () {
+    this.resources.reset()
 }

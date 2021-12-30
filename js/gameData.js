@@ -55,6 +55,10 @@ var data = {
                     },
                     addResources: {
                         cellTree1: new Decimal(1)
+                    },
+                    resourcesReset: {
+                        entropy: new Decimal(10),
+                        symbiotes: new Decimal(0)
                     }
                 }
             }

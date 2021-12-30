@@ -13,6 +13,7 @@ function upgradableResource(button, buttonData, player) {
     this.$value = $(button).find(".upgrade-value");
 
     this.addResources = new Resources(buttonData.addResources);
+    this.resourcesReset = this.data.resourcesReset;
 
     this.buttonCallback = buttonData.buttonCallback ? $.proxy(buttonData.buttonCallback, this) : null;
     $(button).click(() => {
@@ -31,6 +32,9 @@ upgradableResource.prototype.upgrade = function (amt) {
         this.player.resources = newResources;
         if (this.data.costFactor) {
             this.cost = this.cost.times(new Resources(this.data.costFactor));
+        }
+        if (this.data.resourcesReset) {
+            this.player.setResources(this.data.resourcesReset);
         }
     }
 };

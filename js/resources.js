@@ -36,6 +36,15 @@ Resources.prototype.times = function (resourceMultiplier) {
         });
 }
 
+Resources.prototype.set = function (resources) {
+    return new Resources(this.vals)
+        .iter(function (name){
+            if (resources[name]) {
+                this.vals[name] = resources[name];
+            }
+        });
+}
+
 Resources.prototype.allPositive = function () {
     for (const name in this.vals) {
         if (this.vals[name].lessThan(new Decimal(0))) {
