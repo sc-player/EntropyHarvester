@@ -10,10 +10,14 @@ function upgradableResource(button, buttonData, player) {
 
     this.$amt = $(button).find(".upgrade-amt");
     this.$cost = $(button).find(".upgrade-cost");
+    this.$value = $(button).find(".upgrade-value");
+
+    this.addResources = new Resources(buttonData.addResources);
 
     this.buttonCallback = buttonData.buttonCallback ? $.proxy(buttonData.buttonCallback, this) : null;
     $(button).click(() => {
         this.upgrade(new Decimal(1));
+        this.player.addResources(this.addResources);
         if (this.buttonCallback) {
             this.buttonCallback();
         }
@@ -21,14 +25,18 @@ function upgradableResource(button, buttonData, player) {
 };
 
 upgradableResource.prototype.upgrade = function (amt) {
-    var newResources = this.player.calcCost(this.cost)
+    var newResources = this.player.calcCost(this.cost);
     if (newResources.allPositive()) {
         this.level = this.level.plus(amt);
         this.player.resources = newResources;
+        if (this.data.costFactor) {
+            this.cost = this.cost.times(new Resources(this.data.costFactor));
+        }
     }
 };
 
-upgradableResource.prototype.draw = function (resourceInfo) {
+upgradableResource.prototype.draw = function () {
+    var resourceInfo = this.player.gameData.resources;
     this.$amt.html(this.level.toString());
     this.$cost.html("(" + this.cost.toString(resourceInfo) + ")");
     this.$button.prop("disabled", () => !this.player.calcCost(this.cost).allPositive());

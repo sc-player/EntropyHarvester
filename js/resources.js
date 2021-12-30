@@ -2,21 +2,38 @@ function Resources(data) {
     this.vals = {
         evoSeeds: new Decimal("0"),
         entropy: new Decimal("0"),
-        symbiotes: new Decimal("0")
+        symbiotes: new Decimal("0"),
+        cellTree1: new Decimal("0")
     }
     if (data) {
         Object.assign(this.vals, data);
     }
 }
 
-Resources.prototype.addResources = function (newResources) {
-    $.each(this.vals, (name) => this.vals[name] = this.vals[name].plus(newResources[name] || new Decimal(0)));
+Resources.prototype.iter = function (callback) {
+    $.each(this.vals, callback.bind(this));
+    return this;
 }
 
-Resources.prototype.subtractResources = function(resourceCost){
-    var res = new Resources(this.vals);
-    $.each(res.vals, (name) => res.vals[name] = res.vals[name].minus(resourceCost.vals[name]));
-    return res;
+Resources.prototype.plus = function (newResources) {
+    return new Resources(this.vals)
+        .iter(function (name) {
+            this.vals[name] = this.vals[name].plus(newResources.vals[name] || new Decimal(0));
+        });
+}
+
+Resources.prototype.minus = function (resourceCost) {
+    return new Resources(this.vals)
+        .iter(function (name) {
+            this.vals[name] = this.vals[name].minus(resourceCost.vals[name] || new Decimal(0));
+        });
+}
+
+Resources.prototype.times = function (resourceMultiplier) {
+    return new Resources(this.vals)
+        .iter(function (name) {
+            this.vals[name] = this.vals[name].times((resourceMultiplier instanceof Decimal ? resourceMultiplier : resourceMultiplier.vals[name]) || Decimal(0));
+        });
 }
 
 Resources.prototype.allPositive = function () {

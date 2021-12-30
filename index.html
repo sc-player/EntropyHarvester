@@ -11,22 +11,34 @@
         <script type="text/javascript" src="js/main.js"></script>
     </head>
     <body>
-        <div class="evoSeeds resources-panel">
-            <h1>Evolution Seeds: <span class="evoSeeds-amt"></span></h1>
+        <div class="resources">
+            <div class="evoSeeds resources-panel">
+                <h1>Evolution Seeds: <span class="evoSeeds-amt"></span></h1>
+            </div>
+            <div class="entropy resources-panel">
+                <h1>Entropy: <span class="entropy-amt"></span></h1>
+            </div>
+            <div class="symbiotes resources-panel">
+                <h1>Symbiotes: <span class="symbiotes-amt"></span></h1>
+            </div>
         </div>
-        <div class="entropy resources-panel">
-            <h1>Entropy: <span class="entropy-amt"></span></h1>
-        </div>
+
         <div class="game-panel intro-panel">
             <button class="upgrade-button" data-name="startButton">
                 Click to begin
             </button>
         </div>
-
         <div class="game-panel d1-panel">
             <button class="upgrade-button" data-name="symbioteButton">
                 Symbiote <br /><span class="upgrade-cost"></span><br /><br /><br />
-                <span class="upgrade-amt">0</span>
+                Generate 1 Entropy/s
+            </button>
+        </div>
+        <div class="game-panel cellTree-panel">
+            <button class="upgrade-button" data-name="cellTree1Button">
+                Self Replicating Genetic Code <br /><span class="upgrade-cost"></span><br />
+                Generate 1 Symbiote/s<br /><br />
+                Level <span class="upgrade-amt">0</span>
             </button>
         </div>
     </body>

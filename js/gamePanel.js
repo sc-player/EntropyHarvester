@@ -25,8 +25,8 @@ gamePanel.prototype.close = function () {
     this.$panel.hide();
 }
 
-gamePanel.prototype.draw = function (resourceInfo) {
+gamePanel.prototype.draw = function () {
     $.each(this.$buttons, function () {
-        this.draw(resourceInfo);
+        this.draw();
     });
 }

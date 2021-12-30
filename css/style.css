@@ -26,6 +26,12 @@ body {
     display: none;
 }
 
+.resources{
+    display: flex;
+    justify-content: center;
+}
+
 .resources-panel {
     display: none;
+    margin: 10px;
 }

@@ -14,26 +14,27 @@ Player.prototype.showCorrectPanels = function () {
 }
 
 Player.prototype.draw = function () {
-    var resourceInfo = this.gameData.resources;
-    this.resources.draw(resourceInfo);
+    this.resources.draw();
     $.each(this.panels, function () {
-        this.draw(resourceInfo);
+        this.draw();
     });
 }
 
+Player.prototype.addResources = function (resources) {
+    this.resources = this.resources.plus(resources);
+}
+
 Player.prototype.calcCost = function (resourceCost) {
-    return this.resources.subtractResources(resourceCost);
+    return this.resources.minus(resourceCost);
 }
 
 Player.prototype.calculateResourceGain = function (elapsed) {
     var gain = new Resources();
     for (var baseName in this.resources.vals) {
         if (this.gameData.resources[baseName].resourceGain) {
-            var thisResource = this.gameData.resources[baseName].resourceGain;
-            $.each(thisResource, (gainedName) => {
-                gain.addResources({ [gainedName]: thisResource[gainedName].times(this.resources.vals[baseName]).times(elapsed) });
-            });
+            var thisResource = new Resources(this.gameData.resources[baseName].resourceGain);
+            gain = gain.plus(thisResource.times(this.resources.vals[baseName]).times(elapsed));
         }
     }
-    this.resources.addResources(gain.vals);
+    this.addResources(gain);
 }
