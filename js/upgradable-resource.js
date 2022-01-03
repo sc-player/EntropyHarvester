@@ -18,10 +18,6 @@ function upgradableResource(button, buttonData, player) {
     this.buttonCallback = buttonData.buttonCallback ? $.proxy(buttonData.buttonCallback, this) : null;
     $(button).click(() => {
         this.upgrade(new Decimal(1));
-        this.player.addResources(this.addResources);
-        if (this.buttonCallback) {
-            this.buttonCallback();
-        }
     });
 };
 
@@ -36,6 +32,13 @@ upgradableResource.prototype.upgrade = function (amt) {
         if (this.data.resourcesReset) {
             this.player.setResources(this.data.resourcesReset);
         }
+        this.player.addResources(this.addResources);
+        if (this.buttonCallback) {
+            this.buttonCallback();
+        }
+        return true;
+    } else {
+        return false;
     }
 };
 
