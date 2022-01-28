@@ -3,7 +3,6 @@ function Resources(data) {
         evoSeeds: new Decimal("0"),
         entropy: new Decimal("0"),
         symbiotes: new Decimal("0"),
-        cellTree1: new Decimal("0")
     }
     if (data) {
         Object.assign(this.vals, data);

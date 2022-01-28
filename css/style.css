@@ -18,8 +18,11 @@ body {
     background-color: indianred;
 }
 
-.upgrade-button.locked{
-    background-color: grey;
+.upgrade-button.autobuyer:not([disabled]){
+    background-color: lightblue;
+}
+.upgrade-button.autobuyer.autobuyer-enabled:not([disabled]){
+    background-color: darkslateblue;
 }
 
 .game-panel{

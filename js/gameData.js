@@ -16,11 +16,6 @@ var data = function () {
         },
         cellTree1: {
             label: "Self Replicating Genetic Code",
-            autoBuy: {
-                rate: new Decimal(1),
-                panel: "d1",
-                button: "symbioteButton"
-            }
         }
     };
     return {
@@ -70,8 +65,29 @@ var data = function () {
             },
             cellTree: {
                 class: "cellTree-panel",
-                    buttons: {
+                buttons: {
                     cellTree1Button: {
+                        cost: {
+                            entropy: new Decimal(500)
+                        },
+                        addResources: {
+                            cellTree1: new Decimal(1)
+                        },
+                        resourcesReset: {
+                            entropy: new Decimal(10),
+                            symbiotes: new Decimal(0)
+                        },
+                        autoBuy: {
+                            rate: new Decimal(1),
+                            panel: "d1",
+                            button: "symbioteButton"
+                        },
+                        buttonCallback: function () {
+                            this.player.panels.cellTree.$buttons.cellTree2Button.toggle(true);
+                            this.$button.find(".symbiote-autobuy-rate").html("1");
+                        }
+                    },
+                    cellTree2Button: {
                         cost: {
                             entropy: new Decimal(1000)
                         },
@@ -86,7 +102,7 @@ var data = function () {
                             symbiotes: new Decimal(0)
                         },
                         buttonCallback: function () {
-                            this.player.addAutoBuyer(resources.cellTree1.autoBuy)
+                            this.player.autoBuyers.symbioteButton.rate = this.player.autoBuyers.symbioteButton.rate.div(new Decimal(2));
                         }
                     }
                 }

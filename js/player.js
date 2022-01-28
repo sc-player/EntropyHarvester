@@ -21,9 +21,21 @@ Player.prototype.draw = function () {
     });
 }
 
-Player.prototype.addAutoBuyer = function (autoBuyerData) {
+Player.prototype.addAutobuyer = function (autoBuyerData) {
     this.autoBuyers[autoBuyerData.button] = autoBuyerData;
     this.autoBuyers[autoBuyerData.button].timeLeft = new Decimal(0);
+    this.autoBuyers[autoBuyerData.button].enabled = true;
+    return this.autoBuyers[autoBuyerData.button];
+}
+
+Player.prototype.toggleAutobuyer = function (name) {
+    this.autoBuyers[name].enabled = !this.autoBuyers[name].enabled;
+}
+
+Player.prototype.resetAutobuyers = function () {
+    for (var ab in this.autoBuyers) {
+        this.autoBuyers[ab].timeLeft = new Decimal(0);
+    }
 }
 
 Player.prototype.addResources = function (resources) {
@@ -40,23 +52,23 @@ Player.prototype.calcCost = function (resourceCost) {
 
 Player.prototype.calculateResourceGain = function (elapsed) {
     var gain = new Resources();
+
     for (var baseName in this.resources.vals) {
         if (this.gameData.resources[baseName].resourceGain) {
             var thisResource = new Resources(this.gameData.resources[baseName].resourceGain);
             gain = gain.plus(thisResource.times(this.resources.vals[baseName]).times(elapsed));
         }
-        if (this.gameData.resources[baseName].autoBuy) {
-            var autobuy = this.gameData.resources[baseName].autoBuy;
-            if (this.autoBuyers[autobuy.button]) {
-                if (this.autoBuyers[autobuy.button].timeLeft <= 0
-                    && this.panels[autobuy.panel].$buttons[autobuy.button].upgrade(new Decimal(1))) {
-                    this.autoBuyers[autobuy.button].timeLeft = this.autoBuyers[autobuy.button].rate;
-                }
-                else {
-                    this.autoBuyers[autobuy.button].timeLeft = this.autoBuyers[autobuy.button].timeLeft.minus(elapsed);
-                }
-            }
-            
+    }
+
+    for (var baseName in this.autoBuyers) {
+        var autoBuy = this.autoBuyers[baseName];
+        if (autoBuy.timeLeft <= 0
+            && autoBuy.enabled
+            && this.panels[autoBuy.panel].$buttons[autoBuy.button].upgrade(new Decimal(1))) {
+            autoBuy.timeLeft = autoBuy.rate;
+        }
+        else {
+            autoBuy.timeLeft = autoBuy.timeLeft.minus(elapsed);
         }
     }
     this.addResources(gain);
