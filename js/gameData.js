@@ -18,12 +18,15 @@ var data = function () {
             label: "Self Replicating Genetic Code",
         }
     };
+
     return {
         panels: {
             intro: {
                 class: "intro-panel",
-                    buttons: {
+                buttons: {
                     startButton: {
+                        name: "startButton",
+                        label: "Click to Begin",
                         cost: {
                             evoSeeds: new Decimal(1)
                         },
@@ -43,8 +46,11 @@ var data = function () {
             },
             d1: {
                 class: "d1-panel",
-                    buttons: {
+                buttons: {
                     symbioteButton: {
+                        name: "symbioteButton",
+                        label: "Symbiote",
+                        desc: "Generates 1 Entroy/s",
                         cost: {
                             entropy: new Decimal(10)
                         },
@@ -67,6 +73,9 @@ var data = function () {
                 class: "cellTree-panel",
                 buttons: {
                     cellTree1Button: {
+                        name: "cellTree1Button",
+                        label: "Self Replicating Genetic Code",
+                        autobuy: true,
                         cost: {
                             entropy: new Decimal(500)
                         },
@@ -88,6 +97,11 @@ var data = function () {
                         }
                     },
                     cellTree2Button: {
+                        name: "cellTree2Button",
+                        label: "Nutrient Absorption",
+                        desc: "Double Symbiote Autobuy Speed",
+                        hidden: "hidden",
+                        upgradeLevel: true,
                         cost: {
                             entropy: new Decimal(1000)
                         },

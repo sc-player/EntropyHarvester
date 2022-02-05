@@ -6,11 +6,14 @@ function gamePanel(panelData, player) {
 
     this.$buttons = {};
     var that = this;
-    this.$panel.find(".upgrade-button").each(function(){
-        var $this = $(this);
-        var buttonName = $this.data("name");
-        that.$buttons[buttonName] = new upgradableResource($this, panelData.buttons[buttonName], player);
+    $.each(this.data.buttons, function () {
+        var render = Mustache.render(that.$buttonTemplate(), this);
+        var $button = $(render);
+        that.$panel.append($button);
+        var buttonName = $button.data("name");
+        that.$buttons[buttonName] = new upgradableResource($button, panelData.buttons[buttonName], player);
     });
+
     this.openCallback = panelData.openCallback ? $.proxy(panelData.openCallback, this) : null;
 }
 
@@ -30,3 +33,13 @@ gamePanel.prototype.draw = function () {
         this.draw();
     });
 }
+
+gamePanel.prototype.$buttonTemplate = function () {
+    var template;
+    return function () {
+        if (!template) {
+            template = $("#button-template");
+        }
+        return template.html();
+    }
+}();

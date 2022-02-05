@@ -2,6 +2,7 @@
     <head>
         <link rel="stylesheet" type="text/css" href="css/style.css" />
         <script type="text/javascript" src="js/Jquery.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
         <script type="text/javascript" src="js/decimal.js"></script>
         <script type="text/javascript" src="js/gameData.js"></script>
         <script type="text/javascript" src="js/resources.js"></script>
@@ -9,6 +10,22 @@
         <script type="text/javascript" src="js/gamePanel.js"></script>
         <script type="text/javascript" src="js/upgradable-resource.js"></script>
         <script type="text/javascript" src="js/main.js"></script>
+        
+        <script type="text/template" id="button-template">
+            <button class="upgrade-button" data-name="{{name}}" {{hidden}}>
+                {{label}} <br />
+                <span class="upgrade-cost"></span><br />
+                {{#desc}}
+                {{.}}<br />
+                {{/desc}}
+                {{#upgradeLevel}}
+                Level <span class="upgrade-amt">0</span>
+                {{/upgradeLevel}}
+                {{#autobuy}}
+                <br/> Autobuy <span class="autobuy-rate"></span> <br />
+                {{/autobuy}}
+            </button>
+        </script>
     </head>
     <body>
         <div class="resources">
@@ -24,26 +41,13 @@
         </div>
 
         <div class="game-panel intro-panel">
-            <button class="upgrade-button" data-name="startButton">
-                Click to begin
-            </button>
+
         </div>
         <div class="game-panel d1-panel">
-            <button class="upgrade-button" data-name="symbioteButton">
-                Symbiote <br /><span class="upgrade-cost"></span><br /><br /><br />
-                Generate 1 Entropy/s
-            </button>
+
         </div>
         <div class="game-panel cellTree-panel">
-            <button class="upgrade-button" data-name="cellTree1Button">
-                Self Replicating Genetic Code <br /><span class="upgrade-cost"></span><br />
-                Autobuy <span class="autobuy-rate"></span> Symbiote/s <br /><br />
-            </button>
-            <button class="upgrade-button" data-name="cellTree2Button" hidden>
-                Nutrient Absorption <br /><span class="upgrade-cost"></span><br />
-                Double Symbiote Autobuy Speed <br />
-                Level <span class="upgrade-amt">0</span>
-            </button>
+
         </div>
     </body>
 </html>
