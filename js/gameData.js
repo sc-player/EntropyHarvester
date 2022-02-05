@@ -75,6 +75,7 @@ var data = function () {
                     cellTree1Button: {
                         name: "cellTree1Button",
                         label: "Self Replicating Genetic Code",
+                        desc: "Autobuy Symbiotes",
                         autobuy: true,
                         cost: {
                             entropy: new Decimal(500)
