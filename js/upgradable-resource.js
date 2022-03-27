@@ -12,6 +12,7 @@ function upgradableResource(button, buttonData, player) {
     this.$cost = this.$button.find(".upgrade-cost");
     this.$value = this.$button.find(".upgrade-value");
     this.$autobuyRate = this.$button.find(".autobuy-rate");
+    this.$autobuyRateWrapper = this.$button.find(".autobuy-rate-wrapper");
 
     this.addResources = new Resources(buttonData.addResources);
     this.resourcesReset = this.data.resourcesReset;
@@ -70,8 +71,13 @@ upgradableResource.prototype.draw = function () {
     } else {
         this.$button.prop("disabled", true);
     }
-    if (this.autoBuyer) {
-        this.$autobuyRate.html(new Decimal(1).div(this.autoBuyer.rate).toString());
+    if (this.data.autoBuy) {
+        if (this.level > 0) {
+            this.$autobuyRateWrapper.show();
+            this.$autobuyRate.html(new Decimal(1).div(this.autoBuyer.rate).toString());
+        } else {
+            this.$autobuyRateWrapper.hide();
+        }
     }
 };
 
