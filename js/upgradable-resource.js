@@ -10,6 +10,7 @@ function upgradableResource(button, buttonData, player) {
 
     this.$amt = this.$button.find(".upgrade-amt");
     this.$cost = this.$button.find(".upgrade-cost");
+    this.$gain = this.$button.find(".resource-gain-amt");
     this.$value = this.$button.find(".upgrade-value");
     this.$autobuyRate = this.$button.find(".autobuy-rate");
     this.$autobuyRateWrapper = this.$button.find(".autobuy-rate-wrapper");
@@ -47,6 +48,16 @@ upgradableResource.prototype.upgrade = function (amt) {
         if (this.data.autoBuy) {
             this.autoBuyer = this.player.addAutobuyer(this.data.autoBuy);
         }
+
+        if (this.data.resourceGainFactor) {
+            for (var baseName in this.data.resourceGainFactor) {
+                for (var gainName in this.data.resourceGainFactor[baseName]) {
+                    this.player.gameData.resources[baseName].resourceGain[gainName] =
+                        this.player.gameData.resources[baseName].resourceGain[gainName].times(this.data.resourceGainFactor[baseName][gainName]);
+                }
+            }
+        }
+
         if (this.buttonCallback) {
             this.buttonCallback();
         }
@@ -60,6 +71,14 @@ upgradableResource.prototype.draw = function () {
     var resourceInfo = this.player.gameData.resources;
     this.$amt.html(this.level.toString());
     this.$cost.html("(" + this.cost.toString(resourceInfo) + ")");
+    if (this.data.addResources) {
+        var resourceGain = new Resources();
+        for (var resource in this.data.addResources) {
+            resourceGain = resourceGain.plus(new Resources(this.player.gameData.resources[resource].resourceGain));
+        }
+        this.$gain.html(resourceGain.toString(this.player.gameData.resources));
+    }
+
     if (this.data.autoBuy && this.level > 0) {
         this.$button.prop("disabled", false);
         this.$button.toggleClass("autobuyer", true);

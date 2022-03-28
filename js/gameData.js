@@ -50,7 +50,7 @@ var data = function () {
                     symbioteButton: {
                         name: "symbioteButton",
                         label: "Symbiote",
-                        desc: "Generates 1 Entroy/s",
+                        resourceGenerator: true,
                         cost: {
                             entropy: new Decimal(10)
                         },
@@ -118,6 +118,29 @@ var data = function () {
                         },
                         buttonCallback: function () {
                             this.player.autoBuyers.symbioteButton.rate = this.player.autoBuyers.symbioteButton.rate.div(new Decimal(2));
+                            this.player.panels.cellTree.$buttons.cellTree3Button.toggle(true);
+                        }
+                    },
+                    cellTree3Button: {
+                        name: "cellTree3Button",
+                        label: "Biological Membrane",
+                        desc: "Double Symbiote Production",
+                        hidden: "hidden",
+                        upgradeLevel: true,
+                        cost: {
+                            entropy: new Decimal(5000)
+                        },
+                        costFactor: {
+                            entropy: new Decimal(100)
+                        },
+                        resourceGainFactor: {
+                            symbiotes: {
+                                entropy: new Decimal(2)
+                            }
+                        },
+                        resourcesReset: {
+                            entropy: new Decimal(10),
+                            symbiotes: new Decimal(0)
                         }
                     }
                 }
