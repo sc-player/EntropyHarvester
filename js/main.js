@@ -6,7 +6,9 @@ $(function () {
     function loop(timestamp) {
         var elapsed = timestamp - lastRender;
         if (elapsed > 50) {
-            player.calculateResourceGain(new Decimal(elapsed / 1000));
+            var elapsed = new Decimal(elapsed / 1000);
+            player.calculateResourceGain(elapsed);
+            player.calculateAutoBuyers(elapsed);
 
             player.draw();
 

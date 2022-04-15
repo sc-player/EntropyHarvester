@@ -1,6 +1,7 @@
 function Player(gameData) {
     this.gameData = gameData;
     this.resources = new Resources({ evoSeeds: new Decimal(1) });
+    this.resourceMultipliers = {};
     this.autoBuyers = {};
 
     this.panels = {};
@@ -52,24 +53,51 @@ Player.prototype.calcCost = function (resourceCost) {
 
 Player.prototype.calculateResourceGain = function (elapsed) {
     var gain = new Resources();
+    var player = this;
+    this.resources.iter(function (name) {
+        var thisResource = player.getResourceGain(name);
 
-    for (var baseName in this.resources.vals) {
-        if (this.gameData.resources[baseName].resourceGain) {
-            var thisResource = new Resources(this.gameData.resources[baseName].resourceGain);
-            gain = gain.plus(thisResource.times(this.resources.vals[baseName]).times(elapsed));
+        if (thisResource) {
+            gain = gain.plus(player.calculateSingleResourceGain(thisResource, name).times(player.resources.vals[name]));
         }
-    }
+    });
 
+    this.addResources(gain.times(elapsed));
+}
+
+Player.prototype.calculateAutoBuyers = function(elapsed){
     for (var baseName in this.autoBuyers) {
         var autoBuy = this.autoBuyers[baseName];
-        if (autoBuy.timeLeft <= 0
-            && autoBuy.enabled
-            && this.panels[autoBuy.panel].$buttons[autoBuy.button].upgrade(new Decimal(1))) {
-            autoBuy.timeLeft = autoBuy.rate;
+        if (autoBuy.timeLeft <= 0) {
+            if (autoBuy.enabled) {
+                var upgraded = this.autoBuy(autoBuy);
+                if (upgraded) {
+                    autoBuy.timeLeft = autoBuy.rate;
+                }
+            }
         }
         else {
             autoBuy.timeLeft = autoBuy.timeLeft.minus(elapsed);
         }
     }
-    this.addResources(gain);
+}
+
+Player.prototype.autoBuy = function (autoBuy) {
+    return this.panels[autoBuy.panel].$buttons[autoBuy.button].upgrade();
+}
+
+Player.prototype.getResourceGain = function (resource) {
+    return this.gameData.resources[resource]?.resourceGain ?
+        new Resources(this.gameData.resources[resource].resourceGain) :
+        null;
+}
+
+Player.prototype.calculateSingleResourceGain = function (thisResource, name) {
+    if (this.resourceMultipliers[name]) {
+        var thisMultiplier = this.resourceMultipliers[name].reduce(function (prev, curr) {
+            return prev.times(curr);
+        }, new Resources({}, 1));
+        thisResource = thisResource.times(thisMultiplier);
+    }
+    return thisResource;
 }

@@ -34,7 +34,7 @@ upgradableResource.prototype.activate = function () {
 upgradableResource.prototype.upgrade = function (amt) {
     var newResources = this.player.calcCost(this.cost);
     if (newResources.allPositive()) {
-        this.level = this.level.plus(amt);
+        this.level = this.level.plus(amt || new Decimal(1));
         this.player.resources = newResources;
         if (this.data.costFactor) {
             this.cost = this.cost.times(new Resources(this.data.costFactor));
@@ -51,10 +51,10 @@ upgradableResource.prototype.upgrade = function (amt) {
 
         if (this.data.resourceGainFactor) {
             for (var baseName in this.data.resourceGainFactor) {
-                for (var gainName in this.data.resourceGainFactor[baseName]) {
-                    this.player.gameData.resources[baseName].resourceGain[gainName] =
-                        this.player.gameData.resources[baseName].resourceGain[gainName].times(this.data.resourceGainFactor[baseName][gainName]);
+                if (!this.player.resourceMultipliers[baseName]) {
+                    this.player.resourceMultipliers[baseName] = [];
                 }
+                this.player.resourceMultipliers[baseName].push(new Resources(this.data.resourceGainFactor[baseName]));
             }
         }
 
@@ -74,7 +74,8 @@ upgradableResource.prototype.draw = function () {
     if (this.data.addResources) {
         var resourceGain = new Resources();
         for (var resource in this.data.addResources) {
-            resourceGain = resourceGain.plus(new Resources(this.player.gameData.resources[resource].resourceGain));
+            var baseGain = resourceGain.plus(new Resources(this.player.gameData.resources[resource].resourceGain));
+            resourceGain = this.player.calculateSingleResourceGain(baseGain, resource);
         }
         this.$gain.html(resourceGain.toString(this.player.gameData.resources));
     }

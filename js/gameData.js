@@ -80,9 +80,6 @@ var data = function () {
                         cost: {
                             entropy: new Decimal(500)
                         },
-                        addResources: {
-                            cellTree1: new Decimal(1)
-                        },
                         resourcesReset: {
                             entropy: new Decimal(10),
                             symbiotes: new Decimal(0)
@@ -108,9 +105,6 @@ var data = function () {
                         },
                         costFactor: {
                             entropy: new Decimal(100)
-                        },
-                        addResources: {
-                            cellTree1: new Decimal(1)
                         },
                         resourcesReset: {
                             entropy: new Decimal(10),

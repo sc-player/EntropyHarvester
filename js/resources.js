@@ -1,8 +1,8 @@
-function Resources(data) {
+function Resources(data, defaultVal = 0) {
     this.vals = {
-        evoSeeds: new Decimal("0"),
-        entropy: new Decimal("0"),
-        symbiotes: new Decimal("0"),
+        evoSeeds: new Decimal(defaultVal),
+        entropy: new Decimal(defaultVal),
+        symbiotes: new Decimal(defaultVal),
     }
     if (data) {
         Object.assign(this.vals, data);
@@ -31,7 +31,8 @@ Resources.prototype.minus = function (resourceCost) {
 Resources.prototype.times = function (resourceMultiplier) {
     return new Resources(this.vals)
         .iter(function (name) {
-            this.vals[name] = this.vals[name].times((resourceMultiplier instanceof Decimal ? resourceMultiplier : resourceMultiplier.vals[name]) || Decimal(0));
+            var value = resourceMultiplier instanceof Decimal ? resourceMultiplier : resourceMultiplier.vals[name];
+            this.vals[name] = this.vals[name].times(value || Decimal(1));
         });
 }
 
