@@ -1,5 +1,5 @@
 $(function () {
-    Decimal.config({ precision: 5 });
+    Decimal.config({ precision: 5, toExpNeg: -5, toExpPos: 5 });
 
     var lastRender = 0
 

@@ -13,6 +13,7 @@ body {
     background-color: lightgreen;
     font-size: 16px;
     margin: 10px;
+    vertical-align: top;
 }
 .upgrade-button[disabled]{
     color: black;

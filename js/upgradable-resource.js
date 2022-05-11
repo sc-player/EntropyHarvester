@@ -54,7 +54,11 @@ upgradableResource.prototype.upgrade = function (amt) {
                 if (!this.player.resourceMultipliers[baseName]) {
                     this.player.resourceMultipliers[baseName] = [];
                 }
-                this.player.resourceMultipliers[baseName].push(new Resources(this.data.resourceGainFactor[baseName]));
+                if (typeof (this.data.resourceGainFactor[baseName]) === 'function') {
+                    this.player.resourceMultipliers[baseName].push(this.data.resourceGainFactor[baseName](this));
+                } else {
+                    this.player.resourceMultipliers[baseName].push(new Resources(this.data.resourceGainFactor[baseName]));
+                }
             }
         }
 

@@ -135,6 +135,38 @@ var data = function () {
                         resourcesReset: {
                             entropy: new Decimal(10),
                             symbiotes: new Decimal(0)
+                        },
+                        buttonCallback: function () {
+                            this.player.panels.cellTree.$buttons.cellTree4Button.toggle(true);
+                        }
+                    },
+                    cellTree4Button: {
+                        name: "cellTree4Button",
+                        label: "Strength in Numbers",
+                        desc: "Increase Symbiote Entropy Gain Based on Symbiotes",
+                        hidden: "hidden",
+                        upgradeLevel: true,
+                        cost: {
+                            entropy: new Decimal(100000)
+                        },
+                        costFactor: {
+                            entropy: new Decimal(10000)
+                        },
+                        resourceGainFactor: {
+                            symbiotes: function (upgradableResource) {
+                                var resource = upgradableResource;
+                                return function (resources) {
+                                    return new Resources({
+                                        entropy: resources.vals.symbiotes.gt(new Decimal(0)) ? (new Decimal(1)).plus(
+                                            resources.vals.symbiotes.log(
+                                                (new Decimal(1)).plus((new Decimal(1)).div(resource.level)))) : new Decimal(1)
+                                    }, 1);
+                                };
+                            }
+                        },
+                        resourcesReset: {
+                            entropy: new Decimal(10),
+                            symbiotes: new Decimal(0)
                         }
                     }
                 }
