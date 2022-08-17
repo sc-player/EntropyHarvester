@@ -20,6 +20,10 @@ body {
     background-color: indianred;
 }
 
+.upgrade-button.max-level[disabled]{
+    background-color: lightgray;
+}
+
 .upgrade-button.autobuyer:not([disabled]){
     background-color: lightblue;
 }

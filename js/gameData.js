@@ -19,6 +19,8 @@ var data = function () {
         }
     };
 
+
+
     return {
         panels: {
             intro: {
@@ -117,19 +119,27 @@ var data = function () {
                     },
                     cellTree3Button: {
                         name: "cellTree3Button",
-                        label: "Biological Membrane",
-                        desc: "Double Symbiote Production",
+                        label: "Metabolism",
+                        desc: "Increase symbiote production based on bought upgrades",
                         hidden: "hidden",
-                        upgradeLevel: true,
+                        maxLevel: 1,
                         cost: {
                             entropy: new Decimal(5000)
                         },
-                        costFactor: {
-                            entropy: new Decimal(50)
-                        },
                         resourceGainFactor: {
-                            symbiotes: {
-                                entropy: new Decimal(2)
+                            symbiotes: function (upgradableResource) {
+                                var cellTreePanel = upgradableResource.player.panels.cellTree;
+                                return function (resources) {
+                                    var res = new Resources({
+                                        entropy: new Decimal(1)
+                                    });
+                                    for (var buttonName in cellTreePanel.$buttons) {
+                                        res = res.plus(new Resources({
+                                            entropy: cellTreePanel.$buttons[buttonName].level.times(new Decimal(0.25))
+                                        }));
+                                    }
+                                    return res;
+                                }
                             }
                         },
                         resourcesReset: {
@@ -142,6 +152,31 @@ var data = function () {
                     },
                     cellTree4Button: {
                         name: "cellTree4Button",
+                        label: "Biological Membrane",
+                        desc: "Double Symbiote Production",
+                        hidden: "hidden",
+                        upgradeLevel: true,
+                        cost: {
+                            entropy: new Decimal(15000)
+                        },
+                        costFactor: {
+                            entropy: new Decimal(20)
+                        },
+                        resourceGainFactor: {
+                            symbiotes: {
+                                entropy: new Decimal(2)
+                            }
+                        },
+                        resourcesReset: {
+                            entropy: new Decimal(10),
+                            symbiotes: new Decimal(0)
+                        },
+                        buttonCallback: function () {
+                            this.player.panels.cellTree.$buttons.cellTree5Button.toggle(true);
+                        }
+                    },
+                    cellTree5Button: {
+                        name: "cellTree5Button",
                         label: "Strength in Numbers",
                         desc: "Increase Symbiote Entropy Gain Based on Symbiotes",
                         hidden: "hidden",

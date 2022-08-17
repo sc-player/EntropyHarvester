@@ -7,6 +7,10 @@ function upgradableResource(button, buttonData, player) {
     this.player = player;
 
     this.level = new Decimal(0);
+    this.maxLevel = null;
+    if (buttonData.maxLevel) {
+        this.maxLevel = buttonData.maxLevel;
+    }
 
     this.$amt = this.$button.find(".upgrade-amt");
     this.$cost = this.$button.find(".upgrade-cost");
@@ -26,7 +30,7 @@ upgradableResource.prototype.activate = function () {
     if (this.data.autoBuy && this.level > 0) {
         this.player.toggleAutobuyer(this.data.autoBuy.button);
     }
-    else {
+    else if (this.level != this.maxLevel) {
         this.upgrade(new Decimal(1));
     }
 }
@@ -89,6 +93,10 @@ upgradableResource.prototype.draw = function () {
         this.$button.toggleClass("autobuyer", true);
         this.$button.toggleClass("autobuyer-enabled", this.data.autoBuy.enabled);
         this.$cost.hide();
+    }
+    else if (this.maxLevel && this.level >= this.maxLevel) {
+        this.$button.prop("disabled", true);
+        this.$button.addClass("max-level");
     }
     else if (this.player.calcCost(this.cost).allPositive()) {
         this.$button.prop("disabled", false);
