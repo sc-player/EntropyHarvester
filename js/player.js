@@ -1,6 +1,6 @@
 function Player(gameData) {
     this.gameData = gameData;
-    this.resources = new Resources({ evoSeeds: new Decimal(1) });
+    this.resources = new Resources({ evoSeeds: new Decimal(1), cellTreeTimer: new Decimal(1) });
     this.resourceMultipliers = {};
     this.autoBuyers = {};
 
@@ -61,7 +61,6 @@ Player.prototype.calculateResourceGain = function (elapsed) {
             gain = gain.plus(player.calculateSingleResourceGain(thisResource, name).times(player.resources.vals[name]));
         }
     });
-
     this.addResources(gain.times(elapsed));
 }
 
@@ -96,7 +95,6 @@ Player.prototype.calculateSingleResourceGain = function (thisResource, name) {
     var player = this;
     if (this.resourceMultipliers[name]) {
         var thisMultiplier = this.resourceMultipliers[name].reduce(function (prev, curr) {
-            console.log(player.resourceMultipliers);
             if (typeof (curr) === 'function') {
                 return prev.times(curr(player.resources))
             } else {

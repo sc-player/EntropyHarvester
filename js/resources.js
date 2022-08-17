@@ -3,6 +3,8 @@ function Resources(data, defaultVal = 0) {
         evoSeeds: new Decimal(defaultVal),
         entropy: new Decimal(defaultVal),
         symbiotes: new Decimal(defaultVal),
+        cellTreeTimer: new Decimal(defaultVal),
+        currentCellTreeTime: new Decimal(defaultVal)
     }
     if (data) {
         Object.assign(this.vals, data);
@@ -63,7 +65,7 @@ Resources.prototype.draw = function () {
 Resources.prototype.toString = function (resourceInfo) {
     var res = [];
     for (var name in this.vals) {
-        if (this.vals[name].greaterThan(0)) {
+        if (this.vals[name].greaterThan(0) && resourceInfo[name].label) {
             res.push(this.vals[name].toString() + " " + (this.vals[name].greaterThan(1) && resourceInfo[name].pluralLabel ? resourceInfo[name].pluralLabel : resourceInfo[name].label));
         }
     }

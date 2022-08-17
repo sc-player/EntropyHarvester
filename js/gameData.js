@@ -14,9 +14,12 @@ var data = function () {
                 entropy: new Decimal(1)
             }
         },
-        cellTree1: {
-            label: "Self Replicating Genetic Code",
-        }
+        cellTreeTimer: {
+            resourceGain: {
+                currentCellTreeTime: new Decimal(1)
+            }
+        },
+        currentCellTreeTime: {}
     };
 
 
@@ -84,7 +87,8 @@ var data = function () {
                         },
                         resourcesReset: {
                             entropy: new Decimal(10),
-                            symbiotes: new Decimal(0)
+                            symbiotes: new Decimal(0),
+                            currentCellTreeTime: new Decimal(0)
                         },
                         autoBuy: {
                             rate: new Decimal(1),
@@ -110,7 +114,8 @@ var data = function () {
                         },
                         resourcesReset: {
                             entropy: new Decimal(10),
-                            symbiotes: new Decimal(0)
+                            symbiotes: new Decimal(0),
+                            currentCellTreeTime: new Decimal(0)
                         },
                         buttonCallback: function () {
                             this.player.autoBuyers.symbioteButton.rate = this.player.autoBuyers.symbioteButton.rate.div(new Decimal(2));
@@ -144,7 +149,8 @@ var data = function () {
                         },
                         resourcesReset: {
                             entropy: new Decimal(10),
-                            symbiotes: new Decimal(0)
+                            symbiotes: new Decimal(0),
+                            currentCellTreeTime: new Decimal(0)
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree4Button.toggle(true);
@@ -169,7 +175,8 @@ var data = function () {
                         },
                         resourcesReset: {
                             entropy: new Decimal(10),
-                            symbiotes: new Decimal(0)
+                            symbiotes: new Decimal(0),
+                            currentCellTreeTime: new Decimal(0)
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree5Button.toggle(true);
@@ -177,8 +184,8 @@ var data = function () {
                     },
                     cellTree5Button: {
                         name: "cellTree5Button",
-                        label: "Strength in Numbers",
-                        desc: "Increase Symbiote Entropy Gain Based on Symbiotes",
+                        label: "Genetic Deviation",
+                        desc: "Increase Symbiote Entropy Gain Based on time since last cell tree reset",
                         hidden: "hidden",
                         upgradeLevel: true,
                         cost: {
@@ -192,17 +199,19 @@ var data = function () {
                                 var resource = upgradableResource;
                                 return function (resources) {
                                     return new Resources({
-                                        entropy: resources.vals.symbiotes.gt(new Decimal(0)) ? (new Decimal(1)).plus(
-                                            resources.vals.symbiotes.log(
-                                                (new Decimal(1)).plus((new Decimal(1)).div(resource.level)))) : new Decimal(1)
+                                        entropy: resources.vals.symbiotes.gt(new Decimal(0))
+                                            ? resources.vals.currentCellTreeTime.div(new Decimal(10))
+                                                .toPower(resource.level.div(resource.level.plus(new Decimal(5))))
+                                            : new Decimal(1)
                                     }, 1);
                                 };
                             }
                         },
                         resourcesReset: {
                             entropy: new Decimal(10),
-                            symbiotes: new Decimal(0)
-                        }
+                            symbiotes: new Decimal(0),
+                            currentCellTreeTime: new Decimal(0)
+                        },
                     }
                 }
             }
