@@ -22,20 +22,9 @@ Player.prototype.draw = function () {
     });
 }
 
-Player.prototype.addAutobuyer = function (autoBuyerData) {
-    this.autoBuyers[autoBuyerData.button] = autoBuyerData;
-    this.autoBuyers[autoBuyerData.button].timeLeft = new Decimal(0);
-    this.autoBuyers[autoBuyerData.button].enabled = true;
-    return this.autoBuyers[autoBuyerData.button];
-}
-
-Player.prototype.toggleAutobuyer = function (name) {
-    this.autoBuyers[name].enabled = !this.autoBuyers[name].enabled;
-}
-
 Player.prototype.resetAutobuyers = function () {
     for (var ab in this.autoBuyers) {
-        this.autoBuyers[ab].timeLeft = new Decimal(0);
+        this.autoBuyers[ab].reset();
     }
 }
 
@@ -66,23 +55,8 @@ Player.prototype.calculateResourceGain = function (elapsed) {
 
 Player.prototype.calculateAutoBuyers = function(elapsed){
     for (var baseName in this.autoBuyers) {
-        var autoBuy = this.autoBuyers[baseName];
-        if (autoBuy.timeLeft <= 0) {
-            if (autoBuy.enabled) {
-                var upgraded = this.autoBuy(autoBuy);
-                if (upgraded) {
-                    autoBuy.timeLeft = autoBuy.rate;
-                }
-            }
-        }
-        else {
-            autoBuy.timeLeft = autoBuy.timeLeft.minus(elapsed);
-        }
+        this.autoBuyers[baseName].buy(elapsed);
     }
-}
-
-Player.prototype.autoBuy = function (autoBuy) {
-    return this.panels[autoBuy.panel].$buttons[autoBuy.button].upgrade();
 }
 
 Player.prototype.getResourceGain = function (resource) {

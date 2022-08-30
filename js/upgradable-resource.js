@@ -28,17 +28,17 @@ function upgradableResource(button, buttonData, player) {
 
 upgradableResource.prototype.activate = function () {
     if (this.data.autoBuy && this.level > 0) {
-        this.player.toggleAutobuyer(this.data.autoBuy.button);
+        this.autoBuyer.toggle();
     }
     else if (this.level != this.maxLevel) {
         this.upgrade(new Decimal(1));
     }
 }
 
-upgradableResource.prototype.upgrade = function (amt) {
+upgradableResource.prototype.upgrade = function () {
     var newResources = this.player.calcCost(this.cost);
     if (newResources.allPositive()) {
-        this.level = this.level.plus(amt || new Decimal(1));
+        this.level = this.level.plus(new Decimal(1));
         this.player.resources = newResources;
         if (this.data.costFactor) {
             this.cost = this.cost.times(new Resources(this.data.costFactor));
@@ -50,7 +50,8 @@ upgradableResource.prototype.upgrade = function (amt) {
         this.player.addResources(this.addResources);
 
         if (this.data.autoBuy) {
-            this.autoBuyer = this.player.addAutobuyer(this.data.autoBuy);
+            this.autoBuyer = new Autobuyer(this.data.autoBuy, this.player);
+            this.player.autoBuyers[this.data.autoBuy.button] = this.autoBuyer;
         }
 
         if (this.data.resourceGainFactor) {
@@ -91,7 +92,7 @@ upgradableResource.prototype.draw = function () {
     if (this.data.autoBuy && this.level > 0) {
         this.$button.prop("disabled", false);
         this.$button.toggleClass("autobuyer", true);
-        this.$button.toggleClass("autobuyer-enabled", this.data.autoBuy.enabled);
+        this.$button.toggleClass("autobuyer-enabled", this.autoBuyer.enabled);
         this.$cost.hide();
     }
     else if (this.maxLevel && this.level >= this.maxLevel) {
