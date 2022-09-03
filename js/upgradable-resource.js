@@ -4,6 +4,8 @@ function upgradableResource(button, buttonData, panel) {
     this.data = buttonData;
     this.cost = new Resources(buttonData.cost);
 
+    this.amount = buttonData.amount;
+
     this.player = panel.player;
     this.panel = panel;
 
@@ -27,7 +29,7 @@ function upgradableResource(button, buttonData, panel) {
 };
 
 upgradableResource.prototype.activate = function () {
-    if (this.data.autoBuy && this.level > 0) {
+    if (this.data.autoBuy && this.level.gt(new Decimal(0))) {
         this.autoBuyer.toggle();
     }
     else if (this.level != this.maxLevel) {
@@ -38,7 +40,7 @@ upgradableResource.prototype.activate = function () {
 upgradableResource.prototype.upgrade = function () {
     var newResources = this.player.calcCost(this.cost);
     if (newResources.allPositive()) {
-        this.level = this.level.plus(new Decimal(1));
+        this.level = this.level.plus(this.amount);
         this.player.resources = newResources;
         if (this.data.costFactor) {
             this.cost = this.cost.times(new Resources(this.data.costFactor));
@@ -56,7 +58,17 @@ upgradableResource.prototype.upgrade = function () {
             this.player.setResources(this.panel.prestigeReset);
             this.player.resetAutobuyers();
         }
-        this.player.addResources(this.addResources);
+
+        if (this.data.autobuyerRateIncrease) {
+            for (var panel in this.data.autobuyerRateIncrease) {
+                for (var button in this.data.autobuyerRateIncrease[panel]) {
+                    this.player.panels[panel].$buttons[button].amount =
+                        this.player.panels[panel].$buttons[button].amount.times(this.data.autobuyerRateIncrease[panel][button]);
+                }
+            }
+        }
+
+        this.player.addResources(this.addResources.times(this.amount));
 
         if (this.data.autoBuy) {
             this.autoBuyer = new Autobuyer(this.data.autoBuy, this.player);
@@ -98,7 +110,7 @@ upgradableResource.prototype.draw = function () {
         this.$gain.html(resourceGain.toString(this.player.gameData.resources));
     }
 
-    if (this.data.autoBuy && this.level > 0) {
+    if (this.data.autoBuy && this.level.gt(new Decimal(0))) {
         this.$button.prop("disabled", false);
         this.$button.toggleClass("autobuyer", true);
         this.$button.toggleClass("autobuyer-enabled", this.autoBuyer.enabled);

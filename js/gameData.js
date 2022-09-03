@@ -39,6 +39,7 @@ var data = function () {
                     startButton: {
                         name: "startButton",
                         label: "Click to Begin",
+                        amount: new Decimal(1),
                         cost: {
                             evoSeeds: new Decimal(1)
                         },
@@ -63,6 +64,7 @@ var data = function () {
                         name: "symbioteButton",
                         label: "Symbiote",
                         resourceGenerator: true,
+                        amount: new Decimal(1),
                         cost: {
                             entropy: new Decimal(10)
                         },
@@ -90,6 +92,7 @@ var data = function () {
                         label: "Self Replicating Genetic Code",
                         desc: "Autobuy Symbiotes",
                         autobuy: true,
+                        amount: new Decimal(1),
                         cost: {
                             entropy: new Decimal(500)
                         },
@@ -108,6 +111,7 @@ var data = function () {
                         label: "Nutrient Absorption",
                         desc: "Double Symbiote Autobuy Speed",
                         hidden: "hidden",
+                        amount: new Decimal(1),
                         upgradeLevel: true,
                         cost: {
                             entropy: new Decimal(1000)
@@ -125,7 +129,8 @@ var data = function () {
                         label: "Metabolism",
                         desc: "Increase symbiote production based on bought upgrades",
                         hidden: "hidden",
-                        maxLevel: 1,
+                        maxLevel: new Decimal(1),
+                        amount: new Decimal(1),
                         cost: {
                             entropy: new Decimal(5000)
                         },
@@ -155,6 +160,7 @@ var data = function () {
                         desc: "Double Symbiote Entropy Production",
                         hidden: "hidden",
                         upgradeLevel: true,
+                        amount: new Decimal(1),
                         cost: {
                             entropy: new Decimal(15000)
                         },
@@ -176,6 +182,7 @@ var data = function () {
                         desc: "Increase Entropy Gain Based on time since last cell tree reset",
                         hidden: "hidden",
                         upgradeLevel: true,
+                        amount: new Decimal(1),
                         cost: {
                             entropy: new Decimal(100000)
                         },
@@ -208,13 +215,33 @@ var data = function () {
                         label: "Previous Generations",
                         desc: "Start with symbiotes",
                         hidden: "hidden",
-                        maxLevel: 1,
+                        maxLevel: new Decimal(1),
+                        amount: new Decimal(1),
                         cost: {
                             entropy: new Decimal(3000000)
                         },
                         prestigeUpgrade: {
                             cellTree: {
                                 symbiotes: new Decimal(10)
+                            }
+                        },
+                        buttonCallback: function () {
+                            this.player.panels.cellTree.$buttons.cellTree7Button.toggle(true);
+                        }
+                    },
+                    cellTree7Button: {
+                        name: "cellTree7Button",
+                        label: "Advanced Genetic Code",
+                        desc: "Gain extra symbiotes when buying",
+                        hidden: "hidden",
+                        upgradeLevel: true,
+                        amount: new Decimal(1),
+                        cost: {
+                            entropy: new Decimal(10).pow(new Decimal(10))
+                        },
+                        autobuyerRateIncrease: {
+                            d1: {
+                                symbioteButton: new Decimal(1.1)
                             }
                         }
                     }
