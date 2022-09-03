@@ -1,10 +1,11 @@
-function upgradableResource(button, buttonData, player) {
+function upgradableResource(button, buttonData, panel) {
     this.$button = button;
 
     this.data = buttonData;
     this.cost = new Resources(buttonData.cost);
 
-    this.player = player;
+    this.player = panel.player;
+    this.panel = panel;
 
     this.level = new Decimal(0);
     this.maxLevel = null;
@@ -20,7 +21,6 @@ function upgradableResource(button, buttonData, player) {
     this.$autobuyRateWrapper = this.$button.find(".autobuy-rate-wrapper");
 
     this.addResources = new Resources(buttonData.addResources);
-    this.resourcesReset = this.data.resourcesReset;
 
     this.buttonCallback = buttonData.buttonCallback ? $.proxy(buttonData.buttonCallback, this) : null;
     $(button).click($.proxy(this.activate, this));
@@ -43,8 +43,17 @@ upgradableResource.prototype.upgrade = function () {
         if (this.data.costFactor) {
             this.cost = this.cost.times(new Resources(this.data.costFactor));
         }
-        if (this.data.resourcesReset) {
-            this.player.setResources(this.data.resourcesReset);
+
+        if (this.data.prestigeUpgrade) {
+            for (var baseName in this.data.prestigeUpgrade) {
+                for (var resourceName in this.data.prestigeUpgrade[baseName]) {
+                    this.player.panels[baseName].prestigeReset[resourceName] = this.data.prestigeUpgrade[baseName][resourceName];
+                }
+            }
+        }
+
+        if (this.panel.prestigeReset) {
+            this.player.setResources(this.panel.prestigeReset);
             this.player.resetAutobuyers();
         }
         this.player.addResources(this.addResources);

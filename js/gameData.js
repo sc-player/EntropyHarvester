@@ -22,7 +22,14 @@ var data = function () {
         currentCellTreeTime: {}
     };
 
-
+    var prestiges = {
+        d1: {
+            entropy: new Decimal(10),
+            symbiotes: new Decimal(0),
+            cellTreeTimer: new Decimal(1),
+            currentCellTreeTime: new Decimal(0)
+        }
+    };
 
     return {
         panels: {
@@ -76,6 +83,7 @@ var data = function () {
             },
             cellTree: {
                 class: "cellTree-panel",
+                prestige: prestiges.d1,
                 buttons: {
                     cellTree1Button: {
                         name: "cellTree1Button",
@@ -84,11 +92,6 @@ var data = function () {
                         autobuy: true,
                         cost: {
                             entropy: new Decimal(500)
-                        },
-                        resourcesReset: {
-                            entropy: new Decimal(10),
-                            symbiotes: new Decimal(0),
-                            currentCellTreeTime: new Decimal(0)
                         },
                         autoBuy: {
                             rate: new Decimal(1),
@@ -111,11 +114,6 @@ var data = function () {
                         },
                         costFactor: {
                             entropy: new Decimal(10)
-                        },
-                        resourcesReset: {
-                            entropy: new Decimal(10),
-                            symbiotes: new Decimal(0),
-                            currentCellTreeTime: new Decimal(0)
                         },
                         buttonCallback: function () {
                             this.player.autoBuyers.symbioteButton.rate = this.player.autoBuyers.symbioteButton.rate.div(new Decimal(2));
@@ -147,11 +145,6 @@ var data = function () {
                                 }
                             }
                         },
-                        resourcesReset: {
-                            entropy: new Decimal(10),
-                            symbiotes: new Decimal(0),
-                            currentCellTreeTime: new Decimal(0)
-                        },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree4Button.toggle(true);
                         }
@@ -159,7 +152,7 @@ var data = function () {
                     cellTree4Button: {
                         name: "cellTree4Button",
                         label: "Biological Membrane",
-                        desc: "Double Symbiote Production",
+                        desc: "Double Symbiote Entropy Production",
                         hidden: "hidden",
                         upgradeLevel: true,
                         cost: {
@@ -173,19 +166,14 @@ var data = function () {
                                 entropy: new Decimal(2)
                             }
                         },
-                        resourcesReset: {
-                            entropy: new Decimal(10),
-                            symbiotes: new Decimal(0),
-                            currentCellTreeTime: new Decimal(0)
-                        },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree5Button.toggle(true);
                         }
                     },
                     cellTree5Button: {
                         name: "cellTree5Button",
-                        label: "Genetic Deviation",
-                        desc: "Increase Symbiote Entropy Gain Based on time since last cell tree reset",
+                        label: "Genetic Drift",
+                        desc: "Increase Entropy Gain Based on time since last cell tree reset",
                         hidden: "hidden",
                         upgradeLevel: true,
                         cost: {
@@ -198,20 +186,37 @@ var data = function () {
                             symbiotes: function (upgradableResource) {
                                 var resource = upgradableResource;
                                 return function (resources) {
+                                    var time = resources.vals.currentCellTreeTime;
                                     return new Resources({
-                                        entropy: resources.vals.symbiotes.gt(new Decimal(0))
-                                            ? resources.vals.currentCellTreeTime.div(new Decimal(10))
-                                                .toPower(resource.level.div(resource.level.plus(new Decimal(5))))
-                                            : new Decimal(1)
+                                        entropy: time.gt(new Decimal(0)) ? new Decimal(1).plus(
+                                            time.div(
+                                                time.pow(
+                                                    (new Decimal(1)).div(resource.level.plus(new Decimal(1)))
+                                                )
+                                            ).div(new Decimal(10))
+                                        ) : 1
                                     }, 1);
                                 };
                             }
                         },
-                        resourcesReset: {
-                            entropy: new Decimal(10),
-                            symbiotes: new Decimal(0),
-                            currentCellTreeTime: new Decimal(0)
+                        buttonCallback: function () {
+                            this.player.panels.cellTree.$buttons.cellTree6Button.toggle(true);
+                        }
+                    },
+                    cellTree6Button: {
+                        name: "cellTree6Button",
+                        label: "Previous Generations",
+                        desc: "Start with symbiotes",
+                        hidden: "hidden",
+                        maxLevel: 1,
+                        cost: {
+                            entropy: new Decimal(3000000)
                         },
+                        prestigeUpgrade: {
+                            cellTree: {
+                                symbiotes: new Decimal(10)
+                            }
+                        }
                     }
                 }
             }

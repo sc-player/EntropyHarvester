@@ -22,6 +22,7 @@ Autobuyer.prototype.buy = function (elapsed) {
             if (this.button.upgrade()) {
                 this.timeLeft = this.timeLeft.minus(this.rate);
             } else {
+                this.timeLeft = new Decimal(0);
                 return;
             }
         }

@@ -57,8 +57,9 @@ Resources.prototype.allPositive = function () {
 }
 
 Resources.prototype.draw = function () {
+    var that = this;
     $.each(this.vals, function (name) {
-        $(`.${name}-amt`).html(this.toString());
+        $(`.${name}-amt`).html(that.displayValue(this));
     });
 }
 
@@ -66,8 +67,12 @@ Resources.prototype.toString = function (resourceInfo) {
     var res = [];
     for (var name in this.vals) {
         if (this.vals[name].greaterThan(0) && resourceInfo[name].label) {
-            res.push(this.vals[name].toString() + " " + (this.vals[name].greaterThan(1) && resourceInfo[name].pluralLabel ? resourceInfo[name].pluralLabel : resourceInfo[name].label));
+            res.push(this.displayValue(this.vals[name]) + " " + (this.vals[name].greaterThan(1) && resourceInfo[name].pluralLabel ? resourceInfo[name].pluralLabel : resourceInfo[name].label));
         }
     }
     return res.join(", ");
+}
+
+Resources.prototype.displayValue = function (val) {
+    return val.toPrecision(5).replace(/(\.[0-9]*[1-9])0*|(\.0*)/, "$1");
 }

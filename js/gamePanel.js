@@ -4,6 +4,9 @@ function gamePanel(panelData, player) {
 
     this.player = player;
 
+    if (panelData.prestige) {
+        this.prestigeReset = panelData.prestige;
+    }
     this.$buttons = {};
     var that = this;
     $.each(this.data.buttons, function () {
@@ -11,7 +14,7 @@ function gamePanel(panelData, player) {
         var $button = $(render);
         that.$panel.append($button);
         var buttonName = $button.data("name");
-        that.$buttons[buttonName] = new upgradableResource($button, panelData.buttons[buttonName], player);
+        that.$buttons[buttonName] = new upgradableResource($button, panelData.buttons[buttonName], that);
     });
 
     this.openCallback = panelData.openCallback ? $.proxy(panelData.openCallback, this) : null;
