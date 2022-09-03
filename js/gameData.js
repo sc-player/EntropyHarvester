@@ -239,6 +239,9 @@ var data = function () {
                         cost: {
                             entropy: new Decimal(10).pow(new Decimal(10))
                         },
+                        costFactor: {
+                            entropy: new Decimal(100000)
+                        },
                         autobuyerRateIncrease: {
                             d1: {
                                 symbioteButton: new Decimal(1.1)
