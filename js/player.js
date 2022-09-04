@@ -70,7 +70,7 @@ Player.prototype.calculateSingleResourceGain = function (thisResource, name) {
     if (this.resourceMultipliers[name]) {
         var thisMultiplier = this.resourceMultipliers[name].reduce(function (prev, curr) {
             if (typeof (curr) === 'function') {
-                return prev.times(curr(player.resources))
+                return prev.times(curr(player.resources, prev))
             } else {
                 return prev.times(curr);
             }

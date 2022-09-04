@@ -246,7 +246,30 @@ var data = function () {
                             d1: {
                                 symbioteButton: new Decimal(1.1)
                             }
+                        },
+                        buttonCallback: function () {
+                            this.player.panels.cellTree.$buttons.cellTree8Button.toggle(true);
                         }
+                    },
+                    cellTree8Button: {
+                        name: "cellTree8Button",
+                        label: "Punnett Square",
+                        desc: "Entropy gain is squared",
+                        hidden: "hidden",
+                        maxLevel: 1,
+                        amount: new Decimal(1),
+                        cost: {
+                            entropy: new Decimal(10).pow(new Decimal(20))
+                        },
+                        resourceGainFactor: {
+                            symbiotes: function (upgradableResource) {
+                                return function (resources, currentMultipliers) {
+                                    return new Resources({
+                                        entropy: currentMultipliers.vals.entropy
+                                    }, 1);
+                                };
+                            }
+                        },
                     }
                 }
             }
