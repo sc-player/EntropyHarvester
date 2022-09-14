@@ -184,7 +184,7 @@ var data = function () {
                         upgradeLevel: true,
                         amount: new Decimal(1),
                         cost: function (level) {
-                            return new Resources({ entropy: (new Decimal(1e5)).times((new Decimal(1e4)).pow(level)) });
+                            return new Resources({ entropy: (new Decimal(1e5)).times((new Decimal(5e3)).pow(level)) });
                         },
                         resourceGainFactor: {
                             symbiotes: function (upgradableResource) {
@@ -234,11 +234,11 @@ var data = function () {
                         upgradeLevel: true,
                         amount: new Decimal(1),
                         cost: function (level) {
-                            return new Resources({ entropy: (new Decimal(1e10)).times((new Decimal(1e5)).pow(level)) });
+                            return new Resources({ entropy: (new Decimal(5e7)).times((new Decimal(1e3)).pow(level)) });
                         },
                         autobuyerRateIncrease: {
                             d1: {
-                                symbioteButton: new Decimal(1.1)
+                                symbioteButton: new Decimal(1.2)
                             }
                         },
                         buttonCallback: function () {
