@@ -2,7 +2,7 @@ function upgradableResource(button, buttonData, panel) {
     this.$button = button;
 
     this.data = buttonData;
-    this.cost = new Resources(buttonData.cost);
+    this.cost = buttonData.cost;
 
     this.amount = buttonData.amount;
 
@@ -38,7 +38,8 @@ upgradableResource.prototype.activate = function () {
 }
 
 upgradableResource.prototype.upgrade = function () {
-    var newResources = this.player.calcCost(this.cost);
+    var cost = this.cost(this.level, this.player.resources);
+    var newResources = this.player.calcCost(cost);
     if (newResources.allPositive()) {
         this.level = this.level.plus(this.amount);
         this.player.resources = newResources;
@@ -100,7 +101,8 @@ upgradableResource.prototype.upgrade = function () {
 upgradableResource.prototype.draw = function () {
     var resourceInfo = this.player.gameData.resources;
     this.$amt.html(this.level.toString());
-    this.$cost.html("(" + this.cost.toString(resourceInfo) + ")");
+    var cost = this.cost(this.level, this.player.resources);
+    this.$cost.html("(" + cost.toString(resourceInfo) + ")");
     if (this.data.addResources) {
         var resourceGain = new Resources();
         for (var resource in this.data.addResources) {
@@ -120,7 +122,7 @@ upgradableResource.prototype.draw = function () {
         this.$button.prop("disabled", true);
         this.$button.addClass("max-level");
     }
-    else if (this.player.calcCost(this.cost).allPositive()) {
+    else if (this.player.calcCost(cost).allPositive()) {
         this.$button.prop("disabled", false);
     } else {
         this.$button.prop("disabled", true);
