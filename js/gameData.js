@@ -68,7 +68,7 @@ var data = function () {
                         cost: function (level, resources) {
                             var softCapStart = new Decimal(1e4);
                             var costMultiplier = resources.vals.symbiotes.gt(softCapStart)
-                                ? resources.vals.symbiotes.pow(new Decimal(1.01)).div(softCapStart.times(new Decimal(1e3)))
+                                ? resources.vals.symbiotes.pow(new Decimal(1.01)).div(softCapStart)
                                 : new Decimal(0);
                             return new Resources({
                                 entropy: costMultiplier.add(new Decimal(10))
@@ -184,7 +184,7 @@ var data = function () {
                         upgradeLevel: true,
                         amount: new Decimal(1),
                         cost: function (level) {
-                            return new Resources({ entropy: (new Decimal(1e5)).times((new Decimal(5e3)).pow(level)) });
+                            return new Resources({ entropy: (new Decimal(1e5)).times((new Decimal(1e3)).pow(level)) });
                         },
                         resourceGainFactor: {
                             symbiotes: function (upgradableResource) {
@@ -234,11 +234,11 @@ var data = function () {
                         upgradeLevel: true,
                         amount: new Decimal(1),
                         cost: function (level) {
-                            return new Resources({ entropy: (new Decimal(5e7)).times((new Decimal(1e3)).pow(level)) });
+                            return new Resources({ entropy: (new Decimal(1e7)).times((new Decimal(5e3)).pow(level)) });
                         },
                         autobuyerRateIncrease: {
                             d1: {
-                                symbioteButton: new Decimal(1.2)
+                                symbioteButton: new Decimal(1.5)
                             }
                         },
                         buttonCallback: function () {
