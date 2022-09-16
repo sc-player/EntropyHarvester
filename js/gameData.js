@@ -39,7 +39,6 @@ var data = function () {
                     startButton: {
                         name: "startButton",
                         label: "Click to Begin",
-                        amount: new Decimal(1),
                         cost: function (level) {
                             return new Resources({ evoSeeds: new Decimal(1) });
                         },
@@ -64,7 +63,6 @@ var data = function () {
                         name: "symbioteButton",
                         label: "Symbiote",
                         resourceGenerator: true,
-                        amount: new Decimal(1),
                         cost: function (level, resources) {
                             var softCapStart = new Decimal(1e4);
                             var costMultiplier = resources.vals.symbiotes.gt(softCapStart)
@@ -98,7 +96,6 @@ var data = function () {
                         label: "Self Replicating Genetic Code",
                         desc: "Autobuy Symbiotes",
                         autobuy: true,
-                        amount: new Decimal(1),
                         cost: function(level){
                             return new Resources({ entropy: new Decimal(500) });
                         },
@@ -117,7 +114,6 @@ var data = function () {
                         label: "Nutrient Absorption",
                         desc: "Double Symbiote Autobuy Speed",
                         hidden: "hidden",
-                        amount: new Decimal(1),
                         upgradeLevel: true,
                         cost: function (level) {
                             return new Resources({ entropy: (new Decimal(1e3)).times((new Decimal(10)).pow(level)) });
@@ -133,7 +129,6 @@ var data = function () {
                         desc: "Increase symbiote entropy production based on bought upgrades",
                         hidden: "hidden",
                         maxLevel: new Decimal(1),
-                        amount: new Decimal(1),
                         cost: function (level) {
                             return new Resources({ entropy: new Decimal(5e3) });
                         },
@@ -163,7 +158,6 @@ var data = function () {
                         desc: "Double Symbiote Entropy Production",
                         hidden: "hidden",
                         upgradeLevel: true,
-                        amount: new Decimal(1),
                         cost: function (level) {
                             return new Resources({ entropy: (new Decimal(1.5e4)).times((new Decimal(20)).pow(level)) });
                         },
@@ -182,7 +176,6 @@ var data = function () {
                         desc: "Increase Entropy Gain Based on time since last cell tree reset",
                         hidden: "hidden",
                         upgradeLevel: true,
-                        amount: new Decimal(1),
                         cost: function (level) {
                             return new Resources({ entropy: (new Decimal(1e5)).times((new Decimal(1e3)).pow(level)) });
                         },
@@ -213,7 +206,6 @@ var data = function () {
                         desc: "Start with symbiotes",
                         hidden: "hidden",
                         maxLevel: new Decimal(1),
-                        amount: new Decimal(1),
                         cost: function (level) {
                             return new Resources({ entropy: new Decimal(3e6) });
                         },
@@ -232,7 +224,6 @@ var data = function () {
                         desc: "Gain extra symbiotes when buying",
                         hidden: "hidden",
                         upgradeLevel: true,
-                        amount: new Decimal(1),
                         cost: function (level) {
                             return new Resources({ entropy: (new Decimal(1e7)).times((new Decimal(5e3)).pow(level)) });
                         },
@@ -251,7 +242,6 @@ var data = function () {
                         desc: "Entropy gain is squared",
                         hidden: "hidden",
                         maxLevel: 1,
-                        amount: new Decimal(1),
                         cost: function (level) {
                             return new Resources({ entropy: new Decimal(1e15) });
                         },

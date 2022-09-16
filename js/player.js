@@ -36,8 +36,23 @@ Player.prototype.setResources = function (resources) {
     this.resources = this.resources.set(resources);
 }
 
-Player.prototype.calcCost = function (resourceCost) {
-    return this.resources.minus(resourceCost);
+Player.prototype.calcAvailableBuys = function (resourceCost, amount){
+    var availableBuys = null;
+    this.resources.iter(function (name) {
+        if (resourceCost.vals[name].eq(0)) {
+            return;
+        }
+        var thisResourceBuys = this.vals[name].div(resourceCost.vals[name]).floor();
+        if (availableBuys == null || availableBuys.gt(thisResourceBuys)) {
+            availableBuys = thisResourceBuys;
+        }
+    });
+    return amount.gt(availableBuys) ? availableBuys : amount;
+}
+
+Player.prototype.calcCost = function (resourceCost, availableBuys) {
+    var cost = resourceCost.times(availableBuys);
+    return this.resources.minus(cost);
 }
 
 Player.prototype.calculateResourceGain = function (elapsed) {

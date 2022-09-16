@@ -17,15 +17,14 @@ Autobuyer.prototype.reset = function() {
 }
 
 Autobuyer.prototype.buy = function (elapsed) {
+    this.timeLeft = this.timeLeft.plus(elapsed);
     if (this.enabled) {
-        while (this.timeLeft > this.rate) {
-            if (this.button.upgrade()) {
-                this.timeLeft = this.timeLeft.minus(this.rate);
-            } else {
-                this.timeLeft = new Decimal(0);
-                return;
-            }
+        var cost = this.button.cost(this.button.level, this.button.player.resources);
+        var timesAttempt = this.timeLeft.div(this.rate).floor();
+        var times = this.button.player.calcAvailableBuys(cost, timesAttempt);
+        if (times.gt(0)) {
+            this.button.upgrade(times, cost);
+            this.timeLeft = this.timeLeft.minus(this.rate.times(timesAttempt)); 
         }
     }
-    this.timeLeft = this.timeLeft.plus(elapsed);
 }
