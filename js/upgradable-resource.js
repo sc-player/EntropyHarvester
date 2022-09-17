@@ -126,7 +126,7 @@ upgradableResource.prototype.draw = function () {
     if (this.data.autoBuy) {
         if (this.level > 0) {
             this.$autobuyRateWrapper.show();
-            this.$autobuyRate.html(new Decimal(1).div(this.autoBuyer.rate).toString());
+            this.$autobuyRate.html(Resources.prototype.displayValue(new Decimal(1).div(this.autoBuyer.rate)));
         } else {
             this.$autobuyRateWrapper.hide();
         }

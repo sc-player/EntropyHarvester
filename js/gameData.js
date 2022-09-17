@@ -66,7 +66,7 @@ var data = function () {
                         cost: function (level, resources) {
                             var softCapStart = new Decimal(1e4);
                             var costMultiplier = resources.vals.symbiotes.gt(softCapStart)
-                                ? resources.vals.symbiotes.pow(new Decimal(1.01)).div(softCapStart)
+                                ? resources.vals.symbiotes.pow(new Decimal(1.5)).div(softCapStart)
                                 : new Decimal(0);
                             return new Resources({
                                 entropy: costMultiplier.add(new Decimal(10))
