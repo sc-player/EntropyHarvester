@@ -10,24 +10,60 @@ var data = function () {
         symbiotes: {
             label: "Symbiote",
             pluralLabel: "Symbiotes",
-            resourceGain: {
-                entropy: new Decimal(1)
+            resourceGain: function (gameState) {
+                var base = new Resources({ entropy: new Decimal(1) });
+
+                //metabolism
+                if (gameState.upgrades.cellTree3Button) {
+                    var metabolism = new Resources({
+                        entropy: gameState.upgrades.cellTree3Button.calc(gameState, base)
+                    });
+                    base = base.times(metabolism);
+                }
+
+                //nutrient absorption
+                if (gameState.upgrades.cellTree4Button) {
+                    var nutrientAbsorption = new Resources({
+                        entropy: gameState.upgrades.cellTree4Button.calc(gameState, base)
+                    });
+                    base = base.times(nutrientAbsorption);
+                }
+
+                //genetic drift
+                if (gameState.upgrades.cellTree5Button) {
+                    var geneticDrift = new Resources({
+                        entropy: gameState.upgrades.cellTree5Button.calc(gameState, base)
+                    });
+                    base = base.times(geneticDrift);
+                }
+
+                //punnet square
+                if (gameState.upgrades.cellTree8Button) {
+                    var punnetSquare = new Resources({
+                        entropy: gameState.upgrades.cellTree8Button.calc(gameState, base)
+                    });
+                    base = base.times(punnetSquare);
+                }
+
+                return base;
             }
         },
         cellTreeTimer: {
-            resourceGain: {
-                currentCellTreeTime: new Decimal(1)
+            resourceGain: function () {
+                return new Resources({ currentCellTreeTime: new Decimal(1) });
             }
         },
         currentCellTreeTime: {}
     };
 
     var prestiges = {
-        d1: {
-            entropy: new Decimal(10),
-            symbiotes: new Decimal(0),
-            cellTreeTimer: new Decimal(1),
-            currentCellTreeTime: new Decimal(0)
+        d1: function (gameState) {
+            return new Resources({
+                entropy: new Decimal(10),
+                symbiotes: gameState.upgrades.cellTree6Button ? gameState.upgrades.cellTree6Button.calc(gameState) : new Decimal(0),
+                cellTreeTimer: new Decimal(1),
+                currentCellTreeTime: new Decimal(0)
+            });
         }
     };
 
@@ -39,11 +75,11 @@ var data = function () {
                     startButton: {
                         name: "startButton",
                         label: "Click to Begin",
-                        cost: function (level) {
+                        cost: function () {
                             return new Resources({ evoSeeds: new Decimal(1) });
                         },
-                        addResources: {
-                            entropy: new Decimal(10)
+                        addResources: function(gameState){
+                            return new Resources({ entropy: new Decimal(10) });
                         },
                         buttonCallback: function () {
                             this.player.panels.intro.close();
@@ -63,20 +99,22 @@ var data = function () {
                         name: "symbioteButton",
                         label: "Symbiote",
                         resourceGenerator: true,
-                        cost: function (level, resources) {
+                        cost: function (gameState) {
                             var softCapStart = new Decimal(1e4);
-                            var costMultiplier = resources.vals.symbiotes.gt(softCapStart)
-                                ? resources.vals.symbiotes.pow(new Decimal(1.5)).div(softCapStart)
+                            var costMultiplier = gameState.resources.vals.symbiotes.gt(softCapStart)
+                                ? gameState.resources.vals.symbiotes.pow(new Decimal(1.5)).div(softCapStart).minus(new Decimal(100))
                                 : new Decimal(0);
                             return new Resources({
                                 entropy: costMultiplier.add(new Decimal(10))
                             });
                         },
-                        addResources: {
-                            symbiotes: new Decimal(1)
+                        addResources: function (gameState) {
+                            return new Resources({
+                                symbiotes: gameState.upgrades.cellTree7Button ? gameState.upgrades.cellTree7Button.calc(gameState) : new Decimal(1)
+                            });
                         },
-                        buttonCallback: function () {
-                            if (this.player.resources.vals.symbiotes.gte(new Decimal(10))) {
+                        buttonCallback: function (gameState) {
+                            if (gameState.resources.vals.symbiotes.gte(new Decimal(10))) {
                                 this.player.panels.cellTree.open();
                             }
                         }
@@ -96,17 +134,20 @@ var data = function () {
                         label: "Self Replicating Genetic Code",
                         desc: "Autobuy Symbiotes",
                         autobuy: true,
-                        cost: function(level){
+                        cost: function(){
                             return new Resources({ entropy: new Decimal(500) });
                         },
                         autoBuy: {
-                            rate: new Decimal(1),
+                            rate: function (gameState) {
+                                return gameState.upgrades.cellTree2Button ?
+                                    gameState.upgrades.cellTree2Button.calc(gameState) :
+                                    new Decimal(1);
+                            },
                             panel: "d1",
                             button: "symbioteButton"
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree2Button.toggle(true);
-                            this.$button.find(".symbiote-autobuy-rate").html("1");
                         }
                     },
                     cellTree2Button: {
@@ -115,11 +156,15 @@ var data = function () {
                         desc: "Double Symbiote Autobuy Speed",
                         hidden: "hidden",
                         upgradeLevel: true,
-                        cost: function (level) {
+                        multiplier: true,
+                        cost: function (gameState) {
+                            var level = gameState.upgrades.cellTree2Button?.level || new Decimal(0);
                             return new Resources({ entropy: (new Decimal(1e3)).times((new Decimal(10)).pow(level)) });
                         },
+                        getValue: function (gameState) {
+                            return (new Decimal(2)).pow(gameState.upgrades.cellTree2Button.level);
+                        },
                         buttonCallback: function () {
-                            this.player.autoBuyers.symbioteButton.rate = this.player.autoBuyers.symbioteButton.rate.div(new Decimal(2));
                             this.player.panels.cellTree.$buttons.cellTree3Button.toggle(true);
                         }
                     },
@@ -129,24 +174,28 @@ var data = function () {
                         desc: "Increase symbiote entropy production based on bought upgrades",
                         hidden: "hidden",
                         maxLevel: new Decimal(1),
-                        cost: function (level) {
+                        multiplier: true,
+                        cost: function () {
                             return new Resources({ entropy: new Decimal(5e3) });
                         },
-                        resourceGainFactor: {
-                            symbiotes: function (upgradableResource) {
-                                var cellTreePanel = upgradableResource.player.panels.cellTree;
-                                return function (resources) {
-                                    var res = new Resources({
-                                        entropy: new Decimal(1)
-                                    });
-                                    for (var buttonName in cellTreePanel.$buttons) {
-                                        res = res.plus(new Resources({
-                                            entropy: cellTreePanel.$buttons[buttonName].level.times(new Decimal(0.25))
-                                        }));
-                                    }
-                                    return res;
+                        getValue: function (gameState) {
+                            var res = new Decimal(1);
+                            var upgradesToCheck = [
+                                "cellTree1Button",
+                                "cellTree2Button",
+                                "cellTree3Button",
+                                "cellTree4Button",
+                                "cellTree5Button",
+                                "cellTree6Button",
+                                "cellTree7Button",
+                                "cellTree8Button",
+                            ];
+                            for (var buttonName in upgradesToCheck) {
+                                if (gameState.upgrades[upgradesToCheck[buttonName]]) {
+                                    res = res.plus(gameState.upgrades[upgradesToCheck[buttonName]].level.times(new Decimal(0.25)));
                                 }
                             }
+                            return res;
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree4Button.toggle(true);
@@ -158,13 +207,13 @@ var data = function () {
                         desc: "Double Symbiote Entropy Production",
                         hidden: "hidden",
                         upgradeLevel: true,
-                        cost: function (level) {
+                        multiplier: true,
+                        cost: function (gameState) {
+                            var level = gameState.upgrades.cellTree4Button?.level || new Decimal(0);
                             return new Resources({ entropy: (new Decimal(1.5e4)).times((new Decimal(20)).pow(level)) });
                         },
-                        resourceGainFactor: {
-                            symbiotes: {
-                                entropy: new Decimal(2)
-                            }
+                        getValue: function (gameState) {
+                            return (new Decimal(2)).pow(gameState.upgrades.cellTree4Button.level);
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree5Button.toggle(true);
@@ -176,25 +225,20 @@ var data = function () {
                         desc: "Increase Entropy Gain Based on time since last cell tree reset",
                         hidden: "hidden",
                         upgradeLevel: true,
-                        cost: function (level) {
+                        multiplier: true,
+                        cost: function (gameState) {
+                            var level = gameState.upgrades.cellTree5Button?.level || new Decimal(0);
                             return new Resources({ entropy: (new Decimal(1e5)).times((new Decimal(1e3)).pow(level)) });
                         },
-                        resourceGainFactor: {
-                            symbiotes: function (upgradableResource) {
-                                var resource = upgradableResource;
-                                return function (resources) {
-                                    var time = resources.vals.currentCellTreeTime;
-                                    return new Resources({
-                                        entropy: time.gt(new Decimal(0)) ? new Decimal(1).plus(
-                                            time.div(
-                                                time.pow(
-                                                    (new Decimal(1)).div(resource.level.plus(new Decimal(1)))
-                                                )
-                                            ).div(new Decimal(10))
-                                        ) : 1
-                                    }, 1);
-                                };
-                            }
+                        getValue: function (gameState) {
+                            var time = gameState.resources.vals.currentCellTreeTime;
+                            return time.gt(new Decimal(0)) ? new Decimal(1).plus(
+                                time.div(
+                                    time.pow(
+                                        (new Decimal(1)).div(gameState.upgrades.cellTree5Button.level.plus(new Decimal(1)))
+                                    )
+                                ).div(new Decimal(10))
+                            ) : new Decimal(1);
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree6Button.toggle(true);
@@ -203,16 +247,15 @@ var data = function () {
                     cellTree6Button: {
                         name: "cellTree6Button",
                         label: "Previous Generations",
-                        desc: "Start with symbiotes",
+                        desc: "Start with symbiotes:",
                         hidden: "hidden",
                         maxLevel: new Decimal(1),
-                        cost: function (level) {
+                        resources: true,
+                        cost: function () {
                             return new Resources({ entropy: new Decimal(3e6) });
                         },
-                        prestigeUpgrade: {
-                            cellTree: {
-                                symbiotes: new Decimal(10)
-                            }
+                        getValue: function () {
+                            return new Decimal(10);
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree7Button.toggle(true);
@@ -224,13 +267,13 @@ var data = function () {
                         desc: "Gain extra symbiotes when buying",
                         hidden: "hidden",
                         upgradeLevel: true,
-                        cost: function (level) {
+                        multiplier: true,
+                        cost: function (gameState) {
+                            var level = gameState.upgrades.cellTree7Button?.level || new Decimal(0);
                             return new Resources({ entropy: (new Decimal(1e7)).times((new Decimal(5e3)).pow(level)) });
                         },
-                        autobuyerRateIncrease: {
-                            d1: {
-                                symbioteButton: new Decimal(1.5)
-                            }
+                        getValue: function (gameState) {
+                            return (new Decimal(1.5)).pow(gameState.upgrades.cellTree7Button.level);
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree8Button.toggle(true);
@@ -241,19 +284,14 @@ var data = function () {
                         label: "Punnett Square",
                         desc: "Entropy gain is squared",
                         hidden: "hidden",
+                        multiplier: true,
                         maxLevel: 1,
-                        cost: function (level) {
+                        cost: function () {
                             return new Resources({ entropy: new Decimal(1e15) });
                         },
-                        resourceGainFactor: {
-                            symbiotes: function (upgradableResource) {
-                                return function (resources, currentMultipliers) {
-                                    return new Resources({
-                                        entropy: currentMultipliers.vals.entropy
-                                    }, 1);
-                                };
-                            }
-                        },
+                        getValue: function (gameState, currentMultipliers) {
+                            return currentMultipliers.vals.entropy;
+                        }
                     }
                 }
             }

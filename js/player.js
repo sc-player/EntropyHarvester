@@ -1,8 +1,10 @@
 function Player(gameData) {
     this.gameData = gameData;
-    this.resources = new Resources({ evoSeeds: new Decimal(1), cellTreeTimer: new Decimal(1) });
-    this.resourceMultipliers = {};
-    this.autoBuyers = {};
+    this.gameState = {
+        resources: new Resources({ evoSeeds: new Decimal(1), cellTreeTimer: new Decimal(1) }),
+        autoBuyers: {},
+        upgrades: {}
+    };
 
     this.panels = {};
     for (var panelName in gameData.panels) {
@@ -16,7 +18,7 @@ Player.prototype.showCorrectPanels = function () {
 }
 
 Player.prototype.draw = function () {
-    this.resources.draw();
+    this.gameState.resources.draw();
     $.each(this.panels, function () {
         this.draw();
     });
@@ -24,21 +26,21 @@ Player.prototype.draw = function () {
 
 Player.prototype.resetAutobuyers = function () {
     for (var ab in this.autoBuyers) {
-        this.autoBuyers[ab].reset();
+        this.gameState.autoBuyers[ab].reset();
     }
 }
 
 Player.prototype.addResources = function (resources) {
-    this.resources = this.resources.plus(resources);
+    this.gameState.resources = this.gameState.resources.plus(resources);
 }
 
 Player.prototype.setResources = function (resources) {
-    this.resources = this.resources.set(resources);
+    this.gameState.resources = resources;
 }
 
 Player.prototype.calcAvailableBuys = function (resourceCost, amount){
     var availableBuys = null;
-    this.resources.iter(function (name) {
+    this.gameState.resources.iter(function (name) {
         if (resourceCost.vals[name].eq(0)) {
             return;
         }
@@ -52,45 +54,28 @@ Player.prototype.calcAvailableBuys = function (resourceCost, amount){
 
 Player.prototype.calcCost = function (resourceCost, availableBuys) {
     var cost = resourceCost.times(availableBuys);
-    return this.resources.minus(cost);
+    return this.gameState.resources.minus(cost);
 }
 
 Player.prototype.calculateResourceGain = function (elapsed) {
     var gain = new Resources();
     var player = this;
-    this.resources.iter(function (name) {
+    this.gameState.resources.iter(function (name) {
         var thisResource = player.getResourceGain(name);
 
         if (thisResource) {
-            gain = gain.plus(player.calculateSingleResourceGain(thisResource, name).times(player.resources.vals[name]));
+            gain = gain.plus(thisResource.times(player.gameState.resources.vals[name]));
         }
     });
     this.addResources(gain.times(elapsed));
 }
 
 Player.prototype.calculateAutoBuyers = function(elapsed){
-    for (var baseName in this.autoBuyers) {
-        this.autoBuyers[baseName].buy(elapsed);
+    for (var baseName in this.gameState.autoBuyers) {
+        this.gameState.autoBuyers[baseName].buy(elapsed);
     }
 }
 
 Player.prototype.getResourceGain = function (resource) {
-    return this.gameData.resources[resource]?.resourceGain ?
-        new Resources(this.gameData.resources[resource].resourceGain) :
-        null;
-}
-
-Player.prototype.calculateSingleResourceGain = function (thisResource, name) {
-    var player = this;
-    if (this.resourceMultipliers[name]) {
-        var thisMultiplier = this.resourceMultipliers[name].reduce(function (prev, curr) {
-            if (typeof (curr) === 'function') {
-                return prev.times(curr(player.resources, prev))
-            } else {
-                return prev.times(curr);
-            }
-        }, new Resources({}, 1));
-        thisResource = thisResource.times(thisMultiplier);
-    }
-    return thisResource;
+    return this.gameData.resources[resource]?.resourceGain ? this.gameData.resources[resource].resourceGain(this.gameState) : new Resources();
 }

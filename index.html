@@ -23,8 +23,16 @@
                 Generates <span class="resource-gain-amt"></span> per second
                 {{/resourceGenerator}}
                 {{#upgradeLevel}}
-                Level <span class="upgrade-amt">0</span>
+                Level <span class="upgrade-amt">0</span><br />
                 {{/upgradeLevel}}
+                {{#multiplier}}
+                <span class="upgrade-value-wrapper">
+                    <span class="upgrade-value"></span>x
+                </span>
+                {{/multiplier}}
+                {{#resources}}
+                <span class="upgrade-value"></span>
+                {{/resources}}
                 {{#autobuy}}
                 <span class="autobuy-rate-wrapper">
                     <span class="autobuy-rate"></span>/s <br />
