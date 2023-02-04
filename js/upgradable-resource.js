@@ -7,8 +7,16 @@ function upgradableResource(button, buttonData, panel) {
     this.player = panel.player;
     this.panel = panel;
 
-    this.level = new Decimal(0);
+    this.player.gameState.upgrades[this.data.name] = {
+        level: this.getLevel() || new Decimal(0),
+        calc: this.updateLastCalcedValue(this.data.name, this.data.getValue),
+        lastCalced: this.getLastCalced()
+    };
     this.amount = new Decimal(1);
+
+    if (this.data.autoBuy && this.getLevel().gt(0)) {
+        this.createAutobuyer();
+    }
 
     this.maxLevel = null;
     if (buttonData.maxLevel) {
@@ -24,6 +32,10 @@ function upgradableResource(button, buttonData, panel) {
     this.$autobuyRate = this.$button.find(".autobuy-rate");
     this.$autobuyRateWrapper = this.$button.find(".autobuy-rate-wrapper");
 
+    if (this.player.gameState.buttonsShown.includes(this.data.name)) {
+        this.$button.toggle(true);
+    }
+
     if (buttonData.addResources) {
         this.addResources = buttonData.addResources;
     }
@@ -33,13 +45,14 @@ function upgradableResource(button, buttonData, panel) {
 };
 
 upgradableResource.prototype.activate = function () {
-    if (this.data.autoBuy && this.level.gt(new Decimal(0))) {
+    if (this.data.autoBuy && this.getLevel().gt(new Decimal(0))) {
         this.autoBuyer.toggle();
     }
-    else if (this.level != this.maxLevel) {
+    else if (this.getLevel() != this.maxLevel) {
         var cost = this.cost(this.player.gameState);
         var times = this.player.calcAvailableBuys(cost, new Decimal(1));
         if (times.gt(new Decimal(0))) {
+            this.player.setResources(this.player.calcCost(cost, times));
             this.upgrade(times, cost);
         }
     }
@@ -53,26 +66,14 @@ upgradableResource.prototype.updateLastCalcedValue = function (name, calc) {
     }
 }
 
-upgradableResource.prototype.upgrade = function (amount, cost) {
-    this.player.setResources(this.player.calcCost(cost, amount));
-    this.level = this.level.plus(amount);
+upgradableResource.prototype.upgrade = function (amount) {
+    this.player.gameState.upgrades[this.data.name].level = this.getLevel().plus(amount);
 
     if (this.addResources) {
         var newResources = this.addResources(this.player.gameState);
         this.player.addResources(newResources.times(amount));
     } else if (this.data.autoBuy) {
-        this.autoBuyer = new Autobuyer(this.data.autoBuy, this.player);
-        this.player.gameState.autoBuyers[this.data.autoBuy.button] = this.autoBuyer;
-        this.player.gameState.upgrades[this.data.name] = { level: this.level };
-    }
-    if (this.player.gameState.upgrades[this.data.name]) {
-        this.player.gameState.upgrades[this.data.name].level = this.level;
-    } else if(this.data.getValue) {
-        this.player.gameState.upgrades[this.data.name] = {
-            level: this.level,
-            calc: this.updateLastCalcedValue(this.data.name, this.data.getValue),
-            lastCalced: new Decimal()
-        };
+        this.createAutobuyer();
     }
 
     if (this.panel.prestigeReset) {
@@ -89,8 +90,9 @@ upgradableResource.prototype.upgrade = function (amount, cost) {
 upgradableResource.prototype.draw = function () {
     var player = this.player;
     var resourceInfo = this.player.gameData.resources;
-    this.$amt.html(this.level.toString());
-    if (player.gameState.upgrades[this.data.name]?.lastCalced) {
+    this.$amt.html(this.getLevel().toString());
+    var thisGameState = player.gameState.upgrades[this.data.name];
+    if (thisGameState.level.gt(0) && thisGameState.lastCalced) {
         this.$valueWrapper.show();
         this.$value.html(Resources.prototype.displayValue(player.gameState.upgrades[this.data.name].lastCalced));
     } else {
@@ -108,13 +110,13 @@ upgradableResource.prototype.draw = function () {
     }
 
     var availableBuys = this.player.calcAvailableBuys(cost, new Decimal(1));
-    if (this.data.autoBuy && this.level.gt(new Decimal(0))) {
+    if (this.data.autoBuy && this.getLevel().gt(new Decimal(0))) {
         this.$button.prop("disabled", false);
         this.$button.toggleClass("autobuyer", true);
         this.$button.toggleClass("autobuyer-enabled", this.autoBuyer.enabled);
         this.$cost.hide();
     }
-    else if (this.maxLevel && this.level >= this.maxLevel) {
+    else if (this.maxLevel && this.getLevel() >= this.maxLevel) {
         this.$button.prop("disabled", true);
         this.$button.addClass("max-level");
     }
@@ -124,10 +126,8 @@ upgradableResource.prototype.draw = function () {
         this.$button.prop("disabled", true);
     }
 
-
-
     if (this.data.autoBuy) {
-        if (this.level > 0) {
+        if (this.getLevel() > 0) {
             this.$autobuyRateWrapper.show();
             this.$autobuyRate.html(Resources.prototype.displayValue(this.autoBuyer.rate(this.player.gameState)));
         } else {
@@ -136,6 +136,22 @@ upgradableResource.prototype.draw = function () {
     }
 };
 
+upgradableResource.prototype.createAutobuyer = function () {
+    this.autoBuyer = new Autobuyer(this.data.autoBuy, this.player);
+    this.player.autoBuyers[this.data.autoBuy.button] = this.autoBuyer;
+}
+
+upgradableResource.prototype.getLevel = function () {
+    return this.player.gameState.upgrades[this.data.name]?.level;
+}
+
+upgradableResource.prototype.getLastCalced = function () {
+    return this.player.gameState.upgrades[this.data.name]?.lastCalced;
+}
+
 upgradableResource.prototype.toggle = function (toggle) {
     this.$button.toggle(toggle);
+    if (toggle) {
+        this.player.gameState.buttonsShown.push(this.data.name);
+    }
 }

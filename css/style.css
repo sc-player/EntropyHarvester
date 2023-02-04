@@ -35,7 +35,7 @@ body {
     display: none;
 }
 
-.resources{
+.main-panel {
     display: flex;
     justify-content: center;
 }

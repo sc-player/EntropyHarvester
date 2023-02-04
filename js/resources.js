@@ -7,6 +7,9 @@ function Resources(data, defaultVal = 0) {
         currentCellTreeTime: new Decimal(defaultVal)
     }
     if (data) {
+        for (var name in data) {
+            data[name] = new Decimal(data[name]);
+        }
         Object.assign(this.vals, data);
     }
 }

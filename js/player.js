@@ -1,32 +1,55 @@
-function Player(gameData) {
+function Player(gameData, loadedState) {
     this.gameData = gameData;
-    this.gameState = {
-        resources: new Resources({ evoSeeds: new Decimal(1), cellTreeTimer: new Decimal(1) }),
-        autoBuyers: {},
-        upgrades: {}
-    };
+    this.gameState = loadedState || new gameState();
 
+    this.autoBuyers = {};
     this.panels = {};
     for (var panelName in gameData.panels) {
         this.panels[panelName] = new gamePanel(data.panels[panelName], this);
     };
+
+    this.gameTimer = $(".game-timer")
     this.showCorrectPanels();
 }
 
+Player.prototype.openPanel = function (name) {
+    if (!this.gameState.openPanels.includes(name)) {
+        this.gameState.openPanels.push(name);
+    }
+    this.panels[name].open();
+}
+
+Player.prototype.closePanel = function (name) {
+    this.gameState.openPanels = this.gameState.openPanels.filter(p => p !== name);
+    this.panels[name].close();
+}
+
 Player.prototype.showCorrectPanels = function () {
-    this.panels.intro.open();
+    for (var name in this.gameState.openPanels) {
+        this.panels[this.gameState.openPanels[name]].open();
+    }
 }
 
 Player.prototype.draw = function () {
     this.gameState.resources.draw();
+    this.drawGameTimer();
     $.each(this.panels, function () {
         this.draw();
     });
 }
 
+Player.prototype.drawGameTimer = function () {
+    this.gameTimer.html();
+}
+
+Player.prototype.addTimeAndSave = function (elapsed) {
+    this.gameState.gameTime = new Date(this.gameState.gameTime + elapsed);
+    dataLoader.prototype.save(1, this.gameState);
+}
+
 Player.prototype.resetAutobuyers = function () {
     for (var ab in this.autoBuyers) {
-        this.gameState.autoBuyers[ab].reset();
+        this.autoBuyers[ab].reset();
     }
 }
 
@@ -71,11 +94,13 @@ Player.prototype.calculateResourceGain = function (elapsed) {
 }
 
 Player.prototype.calculateAutoBuyers = function(elapsed){
-    for (var baseName in this.gameState.autoBuyers) {
-        this.gameState.autoBuyers[baseName].buy(elapsed);
+    for (var baseName in this.autoBuyers) {
+        this.autoBuyers[baseName].buy(elapsed);
     }
 }
 
 Player.prototype.getResourceGain = function (resource) {
-    return this.gameData.resources[resource]?.resourceGain ? this.gameData.resources[resource].resourceGain(this.gameState) : new Resources();
+    return this.gameData.resources[resource]?.resourceGain ?
+        this.gameData.resources[resource].resourceGain(this.gameState) :
+        new Resources();
 }
