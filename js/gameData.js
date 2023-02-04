@@ -82,9 +82,9 @@ var data = function () {
                             return new Resources({ entropy: C.entropy.startBase });
                         },
                         buttonCallback: function () {
-                            this.player.panels.intro.close();
+                            this.player.closePanel("intro"); 
                             $(".resources-panel.evoSeeds").hide();
-                            this.player.panels.d1.open();
+                            this.player.openPanel("d1");
                         }
                     }
                 },
@@ -115,7 +115,7 @@ var data = function () {
                         },
                         buttonCallback: function (gameState) {
                             if (gameState.resources.vals.symbiotes.gte(C.symbiotes.cellTreeOpen)) {
-                                this.player.panels.cellTree.open();
+                                this.player.openPanel("cellTree");
                             }
                         }
                     },
@@ -139,7 +139,7 @@ var data = function () {
                         },
                         autoBuy: {
                             rate: function (gameState) {
-                                return gameState.upgrades.cellTree2Button ?
+                                return gameState.upgrades.cellTree2Button.calc ?
                                     gameState.upgrades.cellTree2Button.calc(gameState) :
                                     C[1];
                             },
@@ -232,10 +232,13 @@ var data = function () {
                         },
                         getValue: function (gameState) {
                             var time = gameState.resources.vals.currentCellTreeTime;
-                            return time.gt(C[0]) ? C[1].plus(
+                            var level = gameState.upgrades.cellTree5Button.level;
+                            return time.gt(C[0]) && level.gt(C[0]) ? C[1].plus(
                                 time.div(
                                     time.pow(
-                                        C.cellTree5Button.divisionAdjuster.div(gameState.upgrades.cellTree5Button.level.plus(C.cellTree5Button.divisionAdjuster))
+                                        C.cellTree5Button.divisionAdjuster.div(
+                                            level.plus(C.cellTree5Button.divisionAdjuster)
+                                        )
                                     )
                                 ).div(C.cellTree5Button.mainDivisor)
                             ) : C[1];
@@ -254,8 +257,8 @@ var data = function () {
                         cost: function () {
                             return new Resources({ entropy: C.cellTree6Button.baseCost });
                         },
-                        getValue: function () {
-                            return C.cellTree6Button.baseSymbioteGain;
+                        getValue: function (gameState) {
+                            return gameState.upgrades.cellTree6Button.level.gt(0) ? C.cellTree6Button.baseSymbioteGain : C[0];
                         },
                         buttonCallback: function () {
                             this.player.panels.cellTree.$buttons.cellTree7Button.toggle(true);
@@ -290,7 +293,7 @@ var data = function () {
                             return new Resources({ entropy: C.cellTree8Button.baseCost });
                         },
                         getValue: function (gameState, currentMultipliers) {
-                            return currentMultipliers.vals.entropy;
+                            return gameState.upgrades.cellTree8Button.level ? currentMultipliers.vals.entropy : C[1];
                         }
                     }
                 }

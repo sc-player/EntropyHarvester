@@ -11,6 +11,8 @@
         <script type="text/javascript" src="js/player.js"></script>
         <script type="text/javascript" src="js/gamePanel.js"></script>
         <script type="text/javascript" src="js/upgradable-resource.js"></script>
+        <script type="text/javascript" src="js/gameState.js"></script>
+        <script type="text/javascript" src="js/data-loader.js"></script>
         <script type="text/javascript" src="js/main.js"></script>
         
         <script type="text/template" id="button-template">
@@ -43,7 +45,7 @@
         </script>
     </head>
     <body>
-        <div class="resources">
+        <div class="main-panel">
             <div class="evoSeeds resources-panel">
                 <h1>Evolution Seeds: <span class="evoSeeds-amt"></span></h1>
             </div>
@@ -52,6 +54,9 @@
             </div>
             <div class="symbiotes resources-panel">
                 <h1>Symbiotes: <span class="symbiotes-amt"></span></h1>
+            </div>
+            <div class="game-time-panel">
+                <span class="game-timer"></span>
             </div>
         </div>
 
