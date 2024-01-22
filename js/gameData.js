@@ -14,7 +14,7 @@ var data = function () {
                 var base = new Resources({ entropy: C.entropy.baseGain });
 
                 //metabolism
-                if (gameState.upgrades.cellTree3Button) {
+                if (gameState.upgrades.cellTree3Button && gameState.upgrades.cellTree3Button.level > 0) {
                     var metabolism = new Resources({
                         entropy: gameState.upgrades.cellTree3Button.calc(gameState, base)
                     });
@@ -293,7 +293,7 @@ var data = function () {
                             return new Resources({ entropy: C.cellTree8Button.baseCost });
                         },
                         getValue: function (gameState, currentMultipliers) {
-                            return gameState.upgrades.cellTree8Button.level ? currentMultipliers.vals.entropy : C[1];
+                            return gameState.upgrades.cellTree8Button.level > 0 ? currentMultipliers.vals.entropy : C[1];
                         }
                     }
                 }

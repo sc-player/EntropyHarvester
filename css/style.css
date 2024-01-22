@@ -2,7 +2,26 @@ body {
     color: white;
     background-color: black;
     text-align: center;
-    margin: 2%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.full-page {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+.main-menu {
+    min-width: 150px;
+    max-width: 150px;
+    min-height: 100vh;
+    background-color: dimgray;
+}
+
+.main-content{
+    margin: 15px;
+    width: 100%;
 }
 
 .upgrade-button {
@@ -15,6 +34,11 @@ body {
     margin: 10px;
     vertical-align: top;
 }
+
+.upgrade-button.hidden{
+    display:none;
+}
+
 .upgrade-button[disabled]{
     color: black;
     background-color: indianred;
@@ -33,14 +57,45 @@ body {
 
 .game-panel{
     display: none;
+    width: 100%;
 }
 
 .main-panel {
     display: flex;
     justify-content: center;
+    width:100%;
 }
 
 .resources-panel {
     display: none;
     margin: 10px;
+}
+
+.load-modal .modal-dialog {
+    width: 200px;
+}
+
+.load-modal .modal-content{
+    background-color: black;
+    border-color: white;
+}
+
+.load-options-list{
+    width:100%
+}
+
+.load-options-list td {
+    border: 1px solid transparent;
+}
+
+.load-options-list .load:hover, .load-options-list .reset:hover{
+    border: 1px double yellow;
+}
+
+.close{
+    color: white;
+}
+
+.close:hover{
+    color: gray;
 }
