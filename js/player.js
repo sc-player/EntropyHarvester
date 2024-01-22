@@ -25,6 +25,9 @@ Player.prototype.closePanel = function (name) {
 }
 
 Player.prototype.showCorrectPanels = function () {
+    for (var name in this.panels) {
+        this.panels[name].close();
+    }
     for (var name in this.gameState.openPanels) {
         this.panels[this.gameState.openPanels[name]].open();
     }
@@ -42,9 +45,8 @@ Player.prototype.drawGameTimer = function () {
     this.gameTimer.html();
 }
 
-Player.prototype.addTimeAndSave = function (elapsed) {
+Player.prototype.addTime = function (elapsed) {
     this.gameState.gameTime = new Date(this.gameState.gameTime + elapsed);
-    dataLoader.prototype.save(1, this.gameState);
 }
 
 Player.prototype.resetAutobuyers = function () {

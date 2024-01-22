@@ -1,23 +1,33 @@
-$(function () {
-    var lastRender = 0;
+function main() {
+    this.lastRender = 0;
+    this.dataLoader = new DataLoader();
 
-    function loop(timestamp) {
-        var elapsed = timestamp - lastRender;
-        if (elapsed > 50) {
-            var elapsedDecimal = new Decimal(elapsed / 1000);
-            player.calculateResourceGain(elapsedDecimal);
-            player.calculateAutoBuyers(elapsedDecimal);
-            
-            player.draw();
+    var loadedState = this.dataLoader.getCurrentData();
 
-            player.addTimeAndSave(elapsed);
-            lastRender = timestamp;
-        }
-        window.requestAnimationFrame(loop);
+    this.player = new Player(window.data, loadedState);
+
+    var UI = new Ui(this.player, this.dataLoader);
+    UI.AttachHandlers();
+}
+
+main.prototype.loop = function (timestamp) {
+    var elapsed = timestamp - this.lastRender;
+    if (elapsed > 50) {
+        var elapsedDecimal = new Decimal(elapsed / 1000);
+        this.player.calculateResourceGain(elapsedDecimal);
+        this.player.calculateAutoBuyers(elapsedDecimal);
+
+        this.player.draw();
+
+        this.player.addTime(elapsed);
+        this.dataLoader.saveGameState(this.player.gameState);
+        this.lastRender = timestamp;
     }
+    window.requestAnimationFrame((ts) => this.loop(ts));
+}
 
-    var loadedState = dataLoader.prototype.load(1)
 
-    var player = new Player(window.data, loadedState);
-    window.requestAnimationFrame(loop);
+$(function () {
+    var m = new main();
+    window.requestAnimationFrame((ts) => m.loop(ts));
 });
